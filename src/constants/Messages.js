@@ -171,47 +171,75 @@ export const registration_forms = {
     to_enter: "Entrar",
   },
 
-  register: {
-    title: "Crie sua Conta STEMINE",
+register: {
+    title: "Crie sua Conta", // Título da página de cadastro
+    
+    // NOVO: Rótulos dos passos do Stepper
+    steps: [ // <-- Adicionado aqui
+      "Dados de Acesso",
+      "Seu Perfil",
+      "Desafios Atuais",
+      "Links Opcionais",
+      "Acessibilidade",
+      "Interesse em Cursos",
+    ],
+
     // Informações básicas
     name: "Nome completo",
+    name_placeholder: "Seu nome completo",
     email: "E-mail",
+    email_placeholder: "seu.email@exemplo.com",
     password: "Senha",
+    password_placeholder: "Mínimo 6 caracteres",
     confirm_password: "Confirmar Senha",
-    date_of_birth: "Data de nascimento",
+    confirm_password_placeholder: "Repita sua senha",
+    date_of_birth: "Data de Nascimento",
     profile_photo: "Foto de perfil (opcional)",
+    profile_photo_placeholder: "URL da sua foto de perfil (ex: LinkedIn)",
 
     // Perfil da mentorada
     area_of_interest: "Área de interesse ou atuação",
-    experience_level: "Nível de experiência na área",
-    Purpose_of_mentoring: "Seu objetivo com a mentoria",
-    time_availability: "Disponibilidade de horário",
-    biografy: "Fale sobre você (conte-nos sua trajetória e ambições)",
+    area_of_interest_placeholder: "Ex: Desenvolvimento Web, Engenharia Civil, Bioquímica",
+    experience_level: "Nível de experiência na área de interesse",
+    experience_level_placeholder: "Ex: Iniciante, Júnior, Pleno, Sênior",
+    Purpose_of_mentoring: "Seus objetivos com a mentoria",
+    Purpose_of_mentoring_placeholder: "O que você busca na mentoria? (Ex: Transição de carreira, desenvolvimento técnico)",
+    time_availability: "Disponibilidade de horário (Selecione até 5 opções)",
+    time_availability_placeholder: "Ex: Terças e Quintas à noite, Flexível",
+    biografy: "Fale sobre você",
+    biography_placeholder: "Conte-nos sobre sua trajetória, paixões e ambições (mínimo 100 caracteres)",
+
+    // Deficiência (já existe, apenas adicionei placeholders)
     disability: {
       title: "Você é uma pessoa com deficiência?",
-      text_button_yes: "sim",
+      text_button_yes: "Sim",
       text_button_no: "Não",
-      what_disability: "Qual é a sua deficência? ",
-      adaptation: "Precisa de alguma adptação? se sim, descreve abaixo: ",
-      explanation:
-        "Entendemos que esta é uma informação pessoal. Solicitamos para garantir a acessibilidade e o melhor suporte a todas as usuárias da plataforma. Sua resposta nos ajuda a oferecer um ambiente mais inclusivo.",
+      what_disability: "Qual é a sua deficiência?",
+      what_disability_placeholder: "Ex: Deficiência visual, auditiva, motora",
+      adaptation: "Precisa de alguma adaptação? Por favor, nos diga abaixo!",
+      adaptation_placeholder: "Ex: Leitor de tela, legenda em vídeos, material em áudio",
+      explanation: "Entendemos que essa é uma informação pessoal, mas queremos garantir acessibilidade para todas. Se você possui alguma deficiência, gentileza responder.",
     },
 
-    //Informações opcionais
+    // Links Opcionais
     Links: {
       linkedin: "LinkedIn",
+      linkedin_placeholder: "Cole o link do seu perfil no LinkedIn",
       portfolio: "Portfólio",
+      portfolio_placeholder: "Cole o link do seu portfólio (se tiver)",
       git_hub: "GitHub",
-      lattes: "Currículo lattes",
+      github_placeholder: "Cole o link do seu GitHub",
+      lattes: "Currículo Lattes",
+      lattes_placeholder: "Cole o link do seu Currículo Lattes",
     },
-    current_challenges: "Desafios atuais",
-    curriculum: "Anexar currículo",
+    current_challenges: "Seus Desafios Atuais (selecione um ou mais)",
+    curriculum: "Currículo (PDF, DOCX) (opcional)",
 
     to_register: "Cadastrar",
     log_in: "Já tem uma conta?",
     link_log_in: "Fazer login",
   },
-
+  
   register_mentors: {
     //informações adicionais para mentoras
   },
@@ -284,5 +312,38 @@ export const error_messages = {
   api_generic: {
     network_error: "Erro de conexão. Verifique sua internet.",
     server_error: "Ocorreu um erro no servidor. Tente novamente mais tarde.",
+  },
+
+  registration_form: {
+    name_required: "O nome completo é obrigatório.",
+    email_required: "O e-mail é obrigatório.",
+    email_invalid: "E-mail inválido.",
+    password_required: "A senha é obrigatória.",
+    password_min_length: "A senha deve ter no mínimo 6 caracteres.",
+    confirm_password_required: "A confirmação de senha é obrigatória.",
+    passwords_do_not_match: "As senhas não coincidem.",
+    date_of_birth_required: "A data de nascimento é obrigatória.",
+    age_min_18: "Você deve ter pelo menos 18 anos para se cadastrar.",
+    profile_photo_url_invalid: "Insira uma URL de foto de perfil válida (jpg, png, gif, svg).",
+
+    area_of_interest_required: "A área de interesse é obrigatória.",
+    experience_level_required: "O nível de experiência é obrigatório.",
+    purpose_of_mentoring_required: "Os objetivos da mentoria são obrigatórios.",
+    purpose_of_mentoring_min_length: "Descreva seus objetivos em pelo menos 50 caracteres.",
+    time_availability_required: "A disponibilidade de horário é obrigatória.",
+    biography_required: "A biografia é obrigatória.",
+    biography_min_length: "A biografia deve ter pelo menos 100 caracteres.",
+
+    current_challenges_required: "Selecione pelo menos um desafio atual.",
+
+    linkedin_invalid: "Insira uma URL de LinkedIn válida.",
+    portfolio_invalid: "Insira uma URL de portfólio válida.",
+    github_invalid: "Insira uma URL de GitHub válida.",
+    lattes_invalid: "Insira uma URL de Currículo Lattes válida.",
+    curriculum_file_required: "Anexe seu currículo.",
+
+    has_disability_required: "Por favor, selecione se você possui deficiência.",
+    disability_type_required: "Por favor, informe qual a sua deficiência.",
+    adaptation_needed_required: "Por favor, descreva as adaptações necessárias.",
   },
 };
