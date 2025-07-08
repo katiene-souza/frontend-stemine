@@ -198,6 +198,7 @@ const CourseCard = ({
           <Button
             variant="contained"
             onClick={onSubscribeClick}
+            disabled={isAdm === true}
             sx={{
               backgroundColor: colors.brand_colors.stemine_purple,
               color: colors.white,
