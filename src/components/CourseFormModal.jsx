@@ -16,6 +16,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image"; 
 import BusinessIcon from '@mui/icons-material/Business';
+import LinkIcon from '@mui/icons-material/Link'; 
 
 
 import { colors } from "../constants/Colors";
@@ -33,6 +34,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
     category: initialData?.category ?? [],
     imageUrl: initialData?.imageUrl ?? "",
     companyLogoUrl: initialData?.companyLogoUrl ?? "", 
+    courseUrl: initialData?.courseUrl ?? "", 
   });
 
   const [errors, setErrors] = useState({});
@@ -326,6 +328,31 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             }}
             error={!!errors.companyLogoUrl}
             helperText={errors.companyLogoUrl}
+            sx={{ mb: 3 }}
+          />
+
+           <Typography
+            variant="body1"
+            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+          >
+            Link do Curso
+          </Typography>
+          <TextField
+            name="courseUrl"
+            placeholder={placeorder_form.course.courseUrl || "URL para a página de inscrição do curso"}
+            variant="outlined"
+            fullWidth
+            value={formData.courseUrl}
+            onChange={handleChange}
+            InputProps={{
+              startAdornment: (
+                <LinkIcon
+                  sx={{ color: colors.text.secondary, marginRight: "8px" }}
+                />
+              ),
+            }}
+            error={!!errors.courseUrl}
+            helperText={errors.courseUrl}
             sx={{ mb: 3 }}
           />
 

@@ -53,6 +53,11 @@ export const validateCourseForm = (formData) => {
     isValid = false;
   }
 
+  if (!formData.courseUrl || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.courseUrl)) {
+    newErrors.courseUrl = error_messages.course_form.course_url_invalid;
+    isValid = false;
+  }
+
   if (!formData.category || formData.category.length === 0) {
     newErrors.category = error_messages.course_form.category_required;
     isValid = false;
