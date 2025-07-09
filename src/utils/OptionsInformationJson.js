@@ -207,4 +207,27 @@ export const options = {
     { id: "busca_emprego", label: "Busca por Emprego" },
     { id: "outros_desafios", label: "Outros" }, // Ajustado ID
   ],
+
+   vacancyLocation: [
+    { id: "all_locations", label: "Todas as Localizações" },
+    { id: "remoto", label: "Remoto" },
+    { id: "belo_horizonte", label: "Belo Horizonte, MG" },
+    { id: "sao_paulo", label: "São Paulo, SP" },
+    { id: "rio_janeiro", label: "Rio de Janeiro, RJ" },
+    { id: "hibrido", label: "Híbrido" },
+  ],
+  vacancyType: [
+    { id: "all_types", label: "Todos os Tipos" },
+    { id: "clt", label: "CLT" },
+    { id: "pj", label: "PJ" },
+    { id: "estagio", label: "Estágio" },
+    { id: "freelancer", label: "Freelancer" },
+  ],
+  vacancyLevel: [ 
+    { id: "all_levels_vac", label: "Todos os Níveis" },
+    { id: "junior_vac", label: "Júnior" },
+    { id: "pleno_vac", label: "Pleno" },
+    { id: "senior_vac", label: "Sênior" },
+    { id: "estagio_vac", label: "Estágio" },
+  ],
 };

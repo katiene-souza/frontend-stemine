@@ -1,7 +1,7 @@
-import { Box, Typography, Paper, Button, Avatar } from '@mui/material'; // Adicione Avatar
+import { Box, Typography, Paper, Button, Avatar } from '@mui/material'; 
 import { colors } from '../../constants/Colors';
-import PersonIcon from '@mui/icons-material/Person'; // Ícone de pessoa para Avatar padrão
-// Adicione ícones para editar e deletar, se desejar que o admin possa gerenciar o mentor diretamente aqui
+import PersonIcon from '@mui/icons-material/Person'; 
+// Adicione ícones para editar e deletar
 // import EditIcon from '@mui/icons-material/Edit';
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import IconButton from '@mui/material/IconButton';
@@ -26,18 +26,18 @@ const SpecialtyTag = ({ text, color }) => (
 );
 
 const MentorCard = ({
-  name,              // Nome da mentora
-  title,             // Título (ex: Engenheira da Computação)
-  company,           // Empresa (ex: Google)
-  rating,            // Avaliação (ex: 5)
-  sessionsCount,     // Quantidade de sessões (ex: 89 sessões)
-  experienceYears,   // Anos de experiência (ex: 10 anos exp.)
-  specialties = [],  // Array de especialidades (ex: ["Backend", "Liderança"])
-  description,       // Breve descrição / frase de impacto
-  mentoringSlots,    // Slots de mentoria disponíveis (ex: 2 mentorias disponíveis este mês)
-  isAdm = false,     // Se é um admin vendo o card
-  onScheduleMentoring, // Função para agendar mentoria
-  onViewProfile,     // Função para ver perfil completo
+  name,              
+  title,            
+  company,           
+  rating,            
+  sessionsCount,     
+  experienceYears,   
+  specialties = [],  
+  description,       
+  mentoringSlots,    
+  isAdm = false,     
+  onScheduleMentoring, 
+  onViewProfile,     
   // onEditClick,     // Se for para admin editar o mentor
   // onDeleteClick,   // Se for para admin deletar o mentor
   ...rest
@@ -129,6 +129,7 @@ const MentorCard = ({
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 'auto' }}>
           <Button
             variant="contained"
+            disabled
             onClick={onScheduleMentoring}
             sx={{
               backgroundColor: colors.brand_colors.stemine_purple,
@@ -144,6 +145,7 @@ const MentorCard = ({
           </Button>
           <Button
             variant="outlined"
+            disabled
             onClick={onViewProfile}
             sx={{
               borderColor: colors.brand_colors.stemine_purple,
