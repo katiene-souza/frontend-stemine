@@ -1,13 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// 1. Crie o Contexto
 export const AuthContext = createContext(null);
 
-// 2. Crie o Provedor (Provider)
 export const AuthProvider = ({ children }) => {
-  // Estado para armazenar o usuário logado (mock)
-  // Tentamos carregar do localStorage para persistência básica
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('currentUser');
     return storedUser ? JSON.parse(storedUser) : null;
@@ -15,7 +11,6 @@ export const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
-  // Persistir o estado do usuário no localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
@@ -50,15 +45,13 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  // Função de Logout
   const logout = () => {
-    setUser(null); // Limpa o usuário
-    navigate('/'); // Redireciona para a página inicial ou de login
+    setUser(null);
+    navigate('/'); 
   };
 
-  const isAuthenticated = !!user; // Booleano: true se houver um usuário logado
+  const isAuthenticated = !!user;
 
-  // O valor que será disponibilizado para os consumidores do contexto
   const contextValue = {
     user,
     isAuthenticated,
@@ -73,7 +66,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// 3. Crie um Hook Customizado para facilitar o consumo
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

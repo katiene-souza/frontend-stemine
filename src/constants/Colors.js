@@ -1,4 +1,4 @@
-export const colors = {
+export const COLORS_APP = {
     white: "#FFFFFF",
     black: "#000000",
 
@@ -31,10 +31,14 @@ export const colors = {
     },
 
     background: {
-        light: "#f8f9fa", // Fundo claro para seções ou cards
-        medium: "#e9ecef", // Fundo intermediário para divisões ou destaque suave
-        dark: "#343a40", // Fundo escuro (para rodapés, cabeçalhos ou seções específicas)
-        card: "#ffffff", // Fundo de cards ou modais
+        light: "#f8f9fa", 
+        medium: "#e9ecef", 
+        dark: "#343a40",
+        dark_light: "rgba(255, 255, 255, 0.1)", 
+        card: "#ffffff", 
+        box_shadow: "0px 4px 15px rgba(0,0,0,0.1)",
+        box_shadow_dark: "0px 6px 15px rgba(0, 0, 0, 0.2)",
+        box_shadow_thick: "0px 2px 4px rgba(0, 0, 0, 0.1)",
     },
 
     border: {
