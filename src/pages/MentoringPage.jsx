@@ -184,7 +184,7 @@ const MentoringPage = () => {
               <Button
                 variant="contained"
                 onClick={() => handleScheduleMentoring("general")}
-                disabled={isAdminUser}
+                disabled
                 sx={{
                   backgroundColor: COLORS_APP.brand_colors.stemine_purple,
                   color: COLORS_APP.white,
@@ -202,7 +202,7 @@ const MentoringPage = () => {
               >
                 {MENTORING_PAGE_CONTENT.how_it_works.enroll_button}
               </Button>
-              <Typography
+              {/*              <Typography
                 variant="body1"
                 sx={{
                   color: COLORS_APP.text.secondary,
@@ -212,7 +212,7 @@ const MentoringPage = () => {
                 }}
               >
                 {MENTORING_PAGE_CONTENT.how_it_works.registration_success_message}
-              </Typography>
+              </Typography> */}
             </>
           </Paper>
         </Box>
@@ -292,7 +292,10 @@ const MentoringPage = () => {
                       variant="body2"
                       sx={{ color: COLORS_APP.text.secondary }}
                     >
-                      {MENTORING_PAGE_CONTENT.steps.assessment_and_match.description}
+                      {
+                        MENTORING_PAGE_CONTENT.steps.assessment_and_match
+                          .description
+                      }
                     </Typography>
                   }
                 />
@@ -352,7 +355,10 @@ const MentoringPage = () => {
                         color: COLORS_APP.text.primary,
                       }}
                     >
-                      {MENTORING_PAGE_CONTENT.steps.continuous_development.title}
+                      {
+                        MENTORING_PAGE_CONTENT.steps.continuous_development
+                          .title
+                      }
                     </Typography>
                   }
                   secondary={
@@ -360,7 +366,10 @@ const MentoringPage = () => {
                       variant="body2"
                       sx={{ color: COLORS_APP.text.secondary }}
                     >
-                      {MENTORING_PAGE_CONTENT.steps.continuous_development.description}
+                      {
+                        MENTORING_PAGE_CONTENT.steps.continuous_development
+                          .description
+                      }
                     </Typography>
                   }
                 />
