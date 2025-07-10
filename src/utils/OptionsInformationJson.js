@@ -1,4 +1,4 @@
-export const options = {
+export const OPTIONS_INFORMATION_JSON = {
   level: [
     {
       id: "all_levels",
@@ -80,10 +80,10 @@ export const options = {
    areaOfInterest: [
     {
       group: "Ciências Exatas e da Terra",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "fisica", label: "Física" },
         { id: "quimica", label: "Química" },
-        { id: "matematica_exatas", label: "Matemática" }, // ID ajustado para evitar conflito com 'mathematics'
+        { id: "matematica_exatas", label: "Matemática" },
         { id: "estatistica", label: "Estatística" },
         { id: "geologia", label: "Geologia" },
         { id: "oceanografia", label: "Oceanografia" },
@@ -93,7 +93,7 @@ export const options = {
     },
     {
       group: "Ciências Biológicas e da Saúde (Pesquisa e Tecnologia)",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "biologia", label: "Biologia (Genética, Microbiologia, Bioquímica, Biotecnologia)" },
         { id: "farmacia_pesquisa", label: "Farmácia (Pesquisa e Desenvolvimento)" },
         { id: "medicina_pesquisa", label: "Medicina (Pesquisa Clínica, Bioinformática)" },
@@ -104,7 +104,7 @@ export const options = {
     },
     {
       group: "Engenharias (Diversas Disciplinas)",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "eng_civil", label: "Engenharia Civil" },
         { id: "eng_mecanica", label: "Engenharia Mecânica" },
         { id: "eng_eletrica", label: "Engenharia Elétrica" },
@@ -120,7 +120,7 @@ export const options = {
     },
     {
       group: "Tecnologia da Informação",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "eng_software", label: "Engenharia de Software (Front-end, Back-end, Full Stack, Mobile)" },
         { id: "ciencia_dados_ia", label: "Ciência de Dados e Inteligência Artificial (Análise de Dados, Machine Learning, Deep Learning)" },
         { id: "ciberseguranca", label: "Cibersegurança" },
@@ -203,9 +203,9 @@ export const options = {
     { id: "equilibrio_carreira_vida", label: "Equilíbrio Carreira/Vida Pessoal" },
     { id: "desenv_habilidades_tec", label: "Desenvolvimento de Habilidades Técnicas" },
     { id: "progressao_carreira", label: "Progressão na Carreira" },
-    { id: "transicao_carreira_opt", label: "Transição de Carreira" }, // Ajustado ID
+    { id: "transicao_carreira_opt", label: "Transição de Carreira" },
     { id: "busca_emprego", label: "Busca por Emprego" },
-    { id: "outros_desafios", label: "Outros" }, // Ajustado ID
+    { id: "outros_desafios", label: "Outros" },
   ],
 
    vacancyLocation: [

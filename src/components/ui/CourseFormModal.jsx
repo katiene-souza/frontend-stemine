@@ -11,18 +11,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ImageIcon from "@mui/icons-material/Image"; 
-import BusinessIcon from '@mui/icons-material/Business';
-import LinkIcon from '@mui/icons-material/Link'; 
+import ImageIcon from "@mui/icons-material/Image";
+import BusinessIcon from "@mui/icons-material/Business";
+import LinkIcon from "@mui/icons-material/Link";
 
-
-import { colors } from "../constants/Colors";
-import { options } from "../utils/OptionsInformationJson";
-import { register_course, placeorder_form } from "../constants/Messages";
-import { validateCourseForm } from "../utils/CourseValidation";
+import { COLORS_APP } from "../../constants/Colors";
+import { OPTIONS_INFORMATION_JSON } from "../../utils/OptionsInformationJson";
+import { COURSE_PAGE_CONTENT, FORMS_PLACEHOLDERS } from "../../constants/Messages";
+import { validate_course_form } from "../../utils/CourseValidation";
 
 const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -33,8 +32,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
     level: initialData?.level ?? "",
     category: initialData?.category ?? [],
     imageUrl: initialData?.imageUrl ?? "",
-    companyLogoUrl: initialData?.companyLogoUrl ?? "", 
-    courseUrl: initialData?.courseUrl ?? "", 
+    company_logo_url: initialData?.company_logo_url ?? "",
+    course_url: initialData?.course_url ?? "",
   });
 
   const [errors, setErrors] = useState({});
@@ -48,7 +47,10 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
       }));
     } else {
       if (name === "description" && value.length > 97) {
-        setFormData((prevData) => ({ ...prevData, [name]: value.substring(0, 97) }));
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value.substring(0, 97),
+        }));
       } else {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
       }
@@ -61,7 +63,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { errors: newErrors, isValid } = validateCourseForm(formData);
+    const { errors: newErrors, isValid } = validate_course_form(formData);
     setErrors(newErrors);
     if (isValid) {
       onSubmit(formData);
@@ -89,9 +91,9 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
         <Typography
           variant="h5"
           component="div"
-          sx={{ fontWeight: "bold", color: colors.text.primary }}
+          sx={{ fontWeight: "bold", color: COLORS_APP.text.primary }}
         >
-          {register_course.is_adm_text_button}
+          {COURSE_PAGE_CONTENT.admin_add_course_button}
         </Typography>
         <IconButton
           aria-label="close"
@@ -100,28 +102,28 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: colors.text.secondary,
+            color: COLORS_APP.text.secondary,
             "&:hover": {
-              backgroundColor: colors.background.light,
+              backgroundColor: COLORS_APP.background.light,
             },
           }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-        
+
       <DialogContent dividers sx={{ p: 4, pt: 2 }}>
         <form onSubmit={handleSubmit}>
           {/* Título do curso */}
           <Typography
             variant="body1"
-            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+            sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-            {register_course.is_adm_course_registration.title}
+            {COURSE_PAGE_CONTENT.admin_course_form.title}
           </Typography>
           <TextField
             name="title"
-            placeholder={placeorder_form.course.title}
+            placeholder={FORMS_PLACEHOLDERS.course_form.title}
             variant="outlined"
             fullWidth
             value={formData.title}
@@ -134,13 +136,13 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
           {/* Descrição */}
           <Typography
             variant="body1"
-            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+            sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-            {register_course.is_adm_course_registration.description}
+            {COURSE_PAGE_CONTENT.admin_course_form.description}
           </Typography>
           <TextField
             name="description"
-            placeholder={placeorder_form.course.description}
+            placeholder={FORMS_PLACEHOLDERS.course_form.description}
             variant="outlined"
             fullWidth
             multiline
@@ -149,12 +151,12 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             onChange={handleChange}
             InputProps={{
               inputProps: {
-                maxLength: 97
-              }
+                maxLength: 97,
+              },
             }}
             error={!!errors.description}
             helperText={
-              (errors.description ? errors.description : '') +
+              (errors.description ? errors.description : "") +
               ` (${formData.description.length}/${97} caracteres)`
             }
             sx={{ mb: 3 }}
@@ -172,8 +174,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             <Box sx={{ flex: 1, display: "flex", gap: { xs: 2, sm: 3 } }}>
               <TextField
                 name="durationValue"
-                label={register_course.is_adm_course_registration.duration}
-                placeholder={placeorder_form.course.duration}
+                label={COURSE_PAGE_CONTENT.admin_course_form.duration}
+                placeholder={FORMS_PLACEHOLDERS.course_form.duration}
                 variant="outlined"
                 type="number"
                 value={formData.durationValue}
@@ -185,8 +187,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
               <TextField
                 select
                 name="durationUnit"
-                label={register_course.is_adm_course_registration.unity} 
-                placeholder={placeorder_form.course.duration}
+                label={COURSE_PAGE_CONTENT.admin_course_form.unit}
+                placeholder={FORMS_PLACEHOLDERS.course_form.duration}
                 variant="outlined"
                 value={formData.durationUnit}
                 onChange={handleChange}
@@ -194,7 +196,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
                 helperText={errors.durationUnit}
                 sx={{ flex: 1 }}
               >
-                {options.courseTime
+                {OPTIONS_INFORMATION_JSON.courseTime
                   .filter((option) => option.id !== "all_units")
                   .map((option) => (
                     <MenuItem key={option.id} value={option.label}>
@@ -207,7 +209,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             <TextField
               select
               name="level"
-              label={register_course.is_adm_course_registration.level}
+              label={COURSE_PAGE_CONTENT.admin_course_form.level}
               variant="outlined"
               value={formData.level}
               onChange={handleChange}
@@ -215,7 +217,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
               helperText={errors.level}
               sx={{ flex: 1 }}
             >
-              {options.level
+              {OPTIONS_INFORMATION_JSON.level
                 .filter((option) => option.id !== "all_levels")
                 .map((option) => (
                   <MenuItem key={option.id} value={option.label}>
@@ -237,8 +239,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             <TextField
               select
               name="category"
-              label={register_course.is_adm_course_registration.category}
-              placeholder={placeorder_form.course.Category}
+              label={COURSE_PAGE_CONTENT.admin_course_form.category}
+              placeholder={FORMS_PLACEHOLDERS.course_form.Category}
               variant="outlined"
               value={formData.category}
               onChange={handleChange}
@@ -255,8 +257,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
                         variant="body2"
                         sx={{
                           backgroundColor:
-                            colors.brand_colors.stemine_purple_light,
-                          color: colors.brand_colors.stemine_purple,
+                            COLORS_APP.brand_colors.stemine_purple_light,
+                          color: COLORS_APP.brand_colors.stemine_purple,
                           borderRadius: "4px",
                           padding: "2px 8px",
                         }}
@@ -269,7 +271,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
               }}
               sx={{ flex: 1 }}
             >
-              {options.category
+              {OPTIONS_INFORMATION_JSON.category
                 .filter((option) => option.id !== "all_categories")
                 .map((option) => (
                   <MenuItem key={option.id} value={option.label}>
@@ -282,13 +284,13 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
           {/* Imagem do curso */}
           <Typography
             variant="body1"
-            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+            sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-            {register_course.is_adm_course_registration.image}
+            {COURSE_PAGE_CONTENT.admin_course_form.image}
           </Typography>
           <TextField
             name="imageUrl"
-            placeholder={placeorder_form.course.image}
+            placeholder={FORMS_PLACEHOLDERS.course_form.image}
             variant="outlined"
             fullWidth
             value={formData.imageUrl}
@@ -296,7 +298,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             InputProps={{
               startAdornment: (
                 <ImageIcon
-                  sx={{ color: colors.text.secondary, marginRight: "8px" }}
+                  sx={{ color: COLORS_APP.text.secondary, marginRight: "8px" }}
                 />
               ),
             }}
@@ -308,54 +310,56 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
           {/* Logo da empresa */}
           <Typography
             variant="body1"
-            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+            sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-            URL do Logo da Empresa
+           {COURSE_PAGE_CONTENT.admin_course_form.partner_logo_url}
           </Typography>
           <TextField
-            name="companyLogoUrl"
-            placeholder={placeorder_form.course.company_logo_url}
+            name="company_logo_url"
+            placeholder={FORMS_PLACEHOLDERS.course_form.company_logo_url}
             variant="outlined"
             fullWidth
-            value={formData.companyLogoUrl}
+            value={formData.company_logo_url}
             onChange={handleChange}
             InputProps={{
               startAdornment: (
                 <BusinessIcon
-                  sx={{ color: colors.text.secondary, marginRight: "8px" }}
+                  sx={{ color: COLORS_APP.text.secondary, marginRight: "8px" }}
                 />
               ),
             }}
-            error={!!errors.companyLogoUrl}
-            helperText={errors.companyLogoUrl}
+            error={!!errors.company_logo_url}
+            helperText={errors.company_logo_url}
             sx={{ mb: 3 }}
           />
 
-           <Typography
+          <Typography
             variant="body1"
-            sx={{ fontWeight: "bold", mb: 1, color: colors.text.primary }}
+            sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-            Link do Curso
+            {COURSE_PAGE_CONTENT.admin_course_form.course_url}
           </Typography>
           <TextField
-            name="courseUrl"
-            placeholder={placeorder_form.course.courseUrl || "URL para a página de inscrição do curso"}
+            name="course_url"
+            placeholder={
+              FORMS_PLACEHOLDERS.course_form.course_url ||
+              "URL para a página de inscrição do curso"
+            }
             variant="outlined"
             fullWidth
-            value={formData.courseUrl}
+            value={formData.course_url}
             onChange={handleChange}
             InputProps={{
               startAdornment: (
                 <LinkIcon
-                  sx={{ color: colors.text.secondary, marginRight: "8px" }}
+                  sx={{ color: COLORS_APP.text.secondary, marginRight: "8px" }}
                 />
               ),
             }}
-            error={!!errors.courseUrl}
-            helperText={errors.courseUrl}
+            error={!!errors.course_url}
+            helperText={errors.course_url}
             sx={{ mb: 3 }}
           />
-
         </form>
       </DialogContent>
 
@@ -364,19 +368,19 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
           variant="contained"
           onClick={handleSubmit}
           sx={{
-            backgroundColor: colors.brand_colors.stemine_purple,
-            color: colors.white,
+            backgroundColor: COLORS_APP.brand_colors.stemine_purple,
+            color: COLORS_APP.white,
             textTransform: "none",
             padding: "12px 30px",
             fontSize: "1rem",
             fontWeight: "bold",
             borderRadius: "50px",
             "&:hover": {
-              backgroundColor: colors.brand_colors.stemine_purple_dark,
+              backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
             },
           }}
         >
-          {register_course.is_adm_text_button}
+          {COURSE_PAGE_CONTENT.admin_add_course_button}
         </Button>
       </DialogActions>
     </Dialog>
