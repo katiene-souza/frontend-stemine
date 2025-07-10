@@ -9,9 +9,13 @@ import { COLORS_APP } from "../constants/Colors";
 import { LANDING_PAGE_CONTENT } from "../constants/Messages";
 
 import InfoCard from "../components/ui/InfoCard";
+import { useAuth } from "../contexts/AuthContext";
+
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
+  const { isAuthenticated } = useAuth(); 
+
   return (
     <Box>
       <Box
@@ -346,6 +350,7 @@ const HomePage = () => {
           component={Link}
           to="/register"
           variant="contained"
+          disabled={isAuthenticated}
           sx={{
             padding: { xs: "15px 40px", md: "18px 50px" },
             fontSize: { xs: "1.1rem", md: "1.25rem" },
