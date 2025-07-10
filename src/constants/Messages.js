@@ -151,22 +151,22 @@ export const MENTORING_PAGE_CONTENT = {
     inscription: {
       title: "Inscrição",
       description:
-        "Você clica no botão 'Quero me Inscrever para Mentoria', lê com atenção os termos antes de aceitá-lo e aguarda nossa equipe encontrar a melhor mentora para você. Quanto mais informações no seu perfil, maior a chance de aprovação.",
+        "Clique em 'Quero me Inscrever na Mentoria'. Leia atentamente os termos e aceite. Nossa equipe avaliará e aprovará seu perfil no programa. Quanto mais detalhes você preencher, maiores suas chances de ser aprovada e encontrar o match perfeito!",
     },
     assessment_and_match: {
       title: "Avaliação e Match",
       description:
-        "Nossa equipe analisa seu perfil e encontra a mentora ideal.",
+        "Nossa equipe analisa seu perfil antes de permitir que você procure a mentora ideial. Queremos garantir segurança a todas!",
     },
     connection: {
       title: "Conexão",
       description:
-        "Apresentamos você à sua mentora e organizamos o primeiro encontro para que vocês possam se planejar.",
+        "Apresentaremos mentoras com vagas disponíveis em uma página exclusiva. Navegue, encontre a profissional que mais se encaixa em seu perfil e clique em 'Agendar Mentoria'. Depois, basta aguardar a aprovação da mentora escolhida.",
     },
     continuous_development: {
       title: "Desenvolvimento contínuo",
       description:
-        "Inicie sua jornada de crescimento profissional com apoio personalizado.",
+        "Com o apoio e a expertise da sua mentora, inicie sua jornada de crescimento profissional e conquiste seus objetivos em STEM.",
     },
   },
 
