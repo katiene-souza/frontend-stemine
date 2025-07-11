@@ -56,6 +56,7 @@ const ConfirmationDialog = ({
                 : COLORS_APP.brand_COLORS_APP.stemine_purple,
             color: COLORS_APP.white,
             textTransform: "none",
+            borderRadius: "50px",
             "&:hover": {
               backgroundColor:
                 confirmColor === "error"

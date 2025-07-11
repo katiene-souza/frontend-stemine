@@ -139,6 +139,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
           color: COLORS_APP.white,
           textTransform: "none",
           padding: "10px 20px",
+          borderRadius: "50px",
           fontWeight: "bold",
           "&:hover": {
             backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
@@ -189,7 +190,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
       </Box>´
       */}
 
-      {/* Opção de Cadastrar-se */}
+      
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
         {REGISTRATION_FORMS_CONTENT.login.call_to_action_text}{" "}
         <MuiLink

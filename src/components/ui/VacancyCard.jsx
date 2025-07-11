@@ -78,7 +78,7 @@ const VacancyCard = ({
       }}
       {...rest}
     >
-      {/* Botões de Admin (Editar e Deletar) */}
+      
       {isAdm && (
         <Box
           sx={{
@@ -137,7 +137,7 @@ const VacancyCard = ({
         >
           {title}
         </Typography>
-        {/* Empresa */}
+        
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <BusinessIcon
             sx={{ fontSize: "1rem", color: COLORS_APP.text.secondary, mr: 0.5 }}
@@ -147,14 +147,14 @@ const VacancyCard = ({
           </Typography>
         </Box>
 
-        {/* Localização, Tipo, Nível */}
+        
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 1 }}>
           <Tag text={location} color={COLORS_APP.status.info} />
           <Tag text={type} color={COLORS_APP.brand_colors.stemine_purple} />
           <Tag text={level} color={COLORS_APP.brand_colors.stemine_pink} />
         </Box>
 
-        {/* Descrição da Vaga */}
+        
         <Typography
           variant="body2"
           sx={{
@@ -171,7 +171,7 @@ const VacancyCard = ({
           {description}
         </Typography>
 
-        {/* Requisitos */}
+        
         <Typography
           variant="subtitle2"
           sx={{ fontWeight: "bold", color: COLORS_APP.text.primary, mb: 0.5 }}
@@ -193,7 +193,7 @@ const VacancyCard = ({
           {requirements}
         </Typography>
 
-        {/* Benefícios */}
+       
         <Typography
           variant="subtitle2"
           sx={{ fontWeight: "bold", color: COLORS_APP.text.primary, mb: 0.5 }}
@@ -215,7 +215,7 @@ const VacancyCard = ({
           {benefits}
         </Typography>
 
-        {/* Data de Publicação (Opcional) */}
+        
         {postedDate && (
           <Typography
             variant="caption"
@@ -229,7 +229,7 @@ const VacancyCard = ({
           </Typography>
         )}
 
-        {/* Botão Candidatar-se */}
+        
         <Button
           variant="contained"
           disabled={isAdm === true}
@@ -240,7 +240,7 @@ const VacancyCard = ({
             textTransform: "none",
             padding: "10px 20px",
             fontWeight: "bold",
-            borderRadius: "4px",
+            borderRadius: "50px",
             mt: "auto",
             "&:hover": {
               backgroundColor: COLORS_APP.brand_colors.stemine_pink_dark,

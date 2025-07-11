@@ -127,6 +127,30 @@ export const VACANCY_PAGE_CONTENT = {
     "Essa ação é irreversível e a vaga será removida permanentemente da plataforma, incluindo todo o seu conteúdo e inscrições associadas.",
 };
 
+export const COMMUNITY_PAGE_CONTENT = {
+  title: "Comunidade STEMINE: Artigos e Eventos",
+  description:
+    "Conecte-se, aprenda e participe de discussões e eventos nas áreas STEM.",
+  votes_label: "votos positivos",
+  comments_label: "comentários",
+  read_more_button: "Artigo completo",
+  no_posts_found: "Nenhuma postagem ou evento encontrado na comunidade.",
+  admin_add_post_button: "Criar Nova Postagem",
+  admin_edit_post_button: "Editar Postagem",
+  admin_post_form: {
+    title: "Título",
+    type: "Tipo de Postagem",
+    content: "Conteúdo / Descrição",
+    author: "Autor / Organizador",
+    image_url: "URL da Imagem",
+    posted_date: "Data de Publicação",
+    event_date: "Data do Evento",
+    event_time: "Hora do Evento",
+    event_location: "Local do Evento",
+    event_link: "Link do Evento",
+  },
+};
+
 export const MENTORING_PAGE_CONTENT = {
   title: "Programa de Mentoria",
 
@@ -288,7 +312,7 @@ export const REGISTRATION_FORMS_CONTENT = {
 
     register_button: "Cadastrar",
     has_account_text: "Já tem uma conta?",
-    has_account_link: "Fazer login",
+    has_account_link: " Fazer login",
   },
 
   register_mentor_form: {
@@ -438,6 +462,20 @@ export const VALIDATION_ERROR_MESSAGES = {
     application_link_required: "O link para candidatura é obrigatório.",
     application_link_invalid:
       "Insira uma URL de candidatura válida (ex: https://site.com/vaga).",
+  },
+
+  community_form: {
+    title_required: "O título da postagem é obrigatório.",
+    title_min_length: "O título deve ter no mínimo 5 caracteres.",
+    author_required: "O autor/organizador é obrigatório.",
+    author_min_length: "O autor/organizador deve ter no mínimo 3 caracteres.",
+    content_required: "O conteúdo da postagem é obrigatório.",
+    content_min_length: "O conteúdo deve ter no mínimo 50 caracteres.",
+    posted_date_required: "A data de publicação é obrigatória.",
+    posted_date_invalid_format:
+      "Formato de data de publicação inválido (YYYY-MM-DD).",
+    image_url_invalid:
+      "URL da imagem inválida. Deve ser um link válido para uma imagem.",
   },
 };
 

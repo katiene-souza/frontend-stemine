@@ -295,7 +295,7 @@ const VacanciesPage = () => {
       maxWidth="lg"
       sx={{ py: { xs: 6, md: 8 }, px: { xs: 2, sm: 4, md: 8 } }}
     >
-      {/* Cabeçalho da Página de Vagas */}
+
       <Box
         sx={{
           display: "flex",
@@ -338,7 +338,7 @@ const VacanciesPage = () => {
         )}
       </Box>
 
-      {/* Seção de Busca e Filtros */}
+
       <Box
         sx={{
           display: "flex",
@@ -347,7 +347,7 @@ const VacanciesPage = () => {
           mb: { xs: 4, md: 5 },
         }}
       >
-        {/* Campo de Busca */}
+
         <TextField
           label={VACANCY_PAGE_CONTENT.search_placeholder}
           variant="outlined"
@@ -371,7 +371,7 @@ const VacanciesPage = () => {
           sx={{ flex: { sm: 1 }, minWidth: { sm: "200px" } }}
         />
 
-        {/* Dropdown de Localização */}
+
         <TextField
           select
           label="Localização"
@@ -389,7 +389,7 @@ const VacanciesPage = () => {
           ))}
         </TextField>
 
-        {/* Dropdown de Tipo de Contrato */}
+
         <TextField
           select
           label="Tipo"
@@ -407,7 +407,7 @@ const VacanciesPage = () => {
           ))}
         </TextField>
 
-        {/* Dropdown de Nível */}
+
         <TextField
           select
           label="Nível"
@@ -432,13 +432,14 @@ const VacanciesPage = () => {
             minWidth: { sm: "120px" },
             color: COLORS_APP.brand_colors.stemine_purple,
             borderColor: COLORS_APP.brand_colors.stemine_purple,
+            borderRadius: "50px"
           }}
         >
           Limpar
         </Button>
       </Box>
 
-      {/* Contagem de Vagas Encontradas */}
+
       <Typography
         variant="body1"
         sx={{ color: COLORS_APP.text.secondary, mb: { xs: 3, md: 4 } }}
@@ -446,14 +447,14 @@ const VacanciesPage = () => {
         {vacancies.length} {VACANCY_PAGE_CONTENT.vacancies_found_message}
       </Typography>
 
-      {/* Mensagens da API */}
+
       {apiMessage.text && (
         <Alert severity={apiMessage.type} sx={{ mb: 3 }}>
           {apiMessage.text}
         </Alert>
       )}
 
-      {/* Exibe o spinner de carregamento da lista de vagas */}
+
       {loading && !apiMessage.text && (
         <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
           <CircularProgress />
@@ -468,7 +469,7 @@ const VacanciesPage = () => {
         </Box>
       )}
 
-      {/* Listagem de VacancyCards (Grid) */}
+
       <Grid container spacing={3}>
         {vacancies.map((vacancy) => (
           <Grid item xs={12} sm={6} md={6} key={vacancy.id}>
@@ -501,7 +502,7 @@ const VacanciesPage = () => {
         confirmColor="error"
       />
 
-      {/* Renderiza a VacancyFormModal */}
+
       <VacancyFormModal
         open={isFormModalOpen}
         onClose={handleCloseFormModal}
@@ -509,7 +510,7 @@ const VacanciesPage = () => {
         initialData={editingVacancyData}
       />
 
-      {/* Snackbar para feedback */}
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
