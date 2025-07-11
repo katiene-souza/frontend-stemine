@@ -28,7 +28,7 @@ const HomePage = () => {
         <Box
           sx={{
             flex: 1,
-            backgroundImage: `url(src/assets/woman_in_stem.png)`,
+            backgroundImage: `url(public/assets/woman_in_stem.png)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             minHeight: { xs: "300px", md: "auto" },
@@ -254,7 +254,7 @@ const HomePage = () => {
         <Box
           sx={{
             flex: 1,
-            backgroundImage: `url(src/assets/woman_in_stem_two.png)`,
+            backgroundImage: `url(public/assets/woman_in_stem_two.png)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             minHeight: { xs: "250px", md: "400px" },

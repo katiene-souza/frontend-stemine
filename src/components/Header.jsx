@@ -75,7 +75,7 @@ const Header = () => {
             fontWeight: "bold",
           }}
         >
-          <img src="src\assets\logo-stemine.png" width="230px" />
+          <img src="public\assets\logo-stemine.png" width="230px" />
         </Typography>
 
         <Box
