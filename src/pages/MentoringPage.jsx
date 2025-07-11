@@ -15,7 +15,6 @@ import {
 
 import {
   MENTORING_PAGE_CONTENT,
-  VALIDATION_ERROR_MESSAGES,
 } from "../constants/Messages";
 import { COLORS_APP } from "../constants/Colors";
 

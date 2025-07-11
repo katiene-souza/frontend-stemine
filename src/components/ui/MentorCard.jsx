@@ -7,7 +7,6 @@ import { MENTORING_PAGE_CONTENT } from "../../constants/Messages";
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import IconButton from '@mui/material/IconButton';
 
-// Componente auxiliar para as tags de especialidade
 const SpecialtyTag = ({ text, color }) => (
   <Box
     sx={{
@@ -75,9 +74,7 @@ const MentorCard = ({
           flexGrow: 1,
         }}
       >
-        {/* Parte superior do Card: Avatar, Nome, Título, Empresa, Avaliação, Experiência */}
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-          {/* Avatar (poderia ser imagem real se disponível) */}
           <Avatar
             sx={{
               bgcolor: COLORS_APP.brand_colors.stemine_purple,

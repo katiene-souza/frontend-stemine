@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import AuthService from '../services/auth.js'; // Este é o serviço que conecta ao backend
+import AuthService from '../services/auth.js'; 
 import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);

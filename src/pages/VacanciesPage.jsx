@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -8,10 +8,17 @@ import {
   Button,
   Snackbar,
   Alert,
+  CircularProgress,
+  Grid,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
+import VacancyService from "../services/VacancyService";
 
 import VacancyCard from "../components/ui/VacancyCard";
 import VacancyFormModal from "../components/ui/VacancyFormModal";
@@ -26,76 +33,15 @@ import {
 } from "../constants/Messages";
 import ConfirmationDialog from "../components/ui/ConfirmationDialog";
 
-const initialMockVacancies = [
-  {
-    id: "v001",
-    title: "Desenvolvedor(a) Front-end Pleno",
-    company: "TechSolutions Ltda.",
-    description:
-      "Buscamos profissional experiente em React para atuar no desenvolvimento de interfaces de usuário.",
-    requirements:
-      "Experiência com React, JavaScript/TypeScript, HTML/CSS, Git. Conhecimento em Material-UI é um diferencial.",
-    benefits:
-      "Vale-refeição, Plano de saúde, Home Office flexível, Day off de aniversário.",
-    location: "Belo Horizonte, MG",
-    type: "CLT",
-    level: "Pleno",
-    applicationLink:
-      "https://www.google.com/search?q=vaga+frontend+techsolutions",
-    postedDate: "2025-06-30",
-  },
-  {
-    id: "v002",
-    title: "Cientista de Dados Júnior",
-    company: "Data Insights S.A.",
-    description:
-      "Oportunidade para iniciar carreira em ciência de dados, auxiliando na análise e modelagem de grandes volumes de dados.",
-    requirements:
-      "Conhecimento em Python, SQL, Estatística básica. Desejável experiência com Pandas/NumPy.",
-    benefits:
-      "Bolsa de estudo para cursos, Vale-transporte, Convênio academia.",
-    location: "São Paulo, SP",
-    type: "Estágio",
-    level: "Júnior",
-    applicationLink:
-      "https://www.google.com/search?q=vaga+data+insights+junior",
-    postedDate: "2025-07-01",
-  },
-  {
-    id: "v003",
-    title: "Especialista em Cibersegurança",
-    company: "SecureNet Corp.",
-    description:
-      "Procuramos especialista em segurança para proteger nossos sistemas e redes contra ameaças cibernéticas.",
-    requirements:
-      "Experiência em pentests, análise de vulnerabilidades, SIEM. Certificações serão um diferencial.",
-    benefits: "Plano odontológico, Aulas de inglês, Participação nos lucros.",
-    location: "Remoto",
-    type: "CLT",
-    level: "Sênior",
-    applicationLink:
-      "https://www.google.com/search?q=vaga+ciberseguranca+securenet",
-    postedDate: "2025-07-05",
-  },
-];
-
 const VacanciesPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const isAdminUser = isAuthenticated && user?.roles.includes("ROLE_ADMIN");
-
-  const [vacancies, setVacancies] = useState(initialMockVacancies);
+  const [vacancies, setVacancies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState(
-    OPTIONS_INFORMATION_JSON.vacancyLocation[0].label
-  );
-  const [typeFilter, setTypeFilter] = useState(
-    OPTIONS_INFORMATION_JSON.vacancyType[0].label
-  );
-  const [levelFilter, setLevelFilter] = useState(
-    OPTIONS_INFORMATION_JSON.vacancyLevel[0].label
-  );
+  const [locationFilter, setLocationFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [levelFilter, setLevelFilter] = useState("");
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingVacancyData, setEditingVacancyData] = useState(null);
@@ -106,6 +52,9 @@ const VacanciesPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  const [loading, setLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState({ text: "", type: "" });
 
   const showSnackbar = (message, severity) => {
     setSnackbarMessage(message);
@@ -119,34 +68,91 @@ const VacanciesPage = () => {
     setSnackbarOpen(false);
   };
 
-  // Filtro
-  const filteredVacancies = vacancies.filter((vacancy) => {
-    const matchesSearch =
-      vacancy.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vacancy.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vacancy.company.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    fetchVacancies();
+  }, []);
 
-    const matchesLocation =
-      locationFilter === OPTIONS_INFORMATION_JSON.vacancyLocation[0].label ||
-      vacancy.location === locationFilter;
-    const matchesType =
-      typeFilter === OPTIONS_INFORMATION_JSON.vacancyType[0].label ||
-      vacancy.type === typeFilter;
-    const matchesLevel =
-      levelFilter === OPTIONS_INFORMATION_JSON.vacancyLevel[0].label ||
-      vacancy.level === levelFilter;
+  const fetchVacancies = async (filters = {}) => {
+    setLoading(true);
+    setApiMessage({ text: "", type: "" });
+    try {
+      const response = await VacancyService.searchVacancies(filters);
+      setVacancies(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar vagas:", error);
+      setApiMessage({
+        text: "Erro ao carregar vagas. Tente novamente.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return matchesSearch && matchesLocation && matchesType && matchesLevel;
-  });
+  const handleApplyFilter = () => {
+    fetchVacancies({
+      title: searchTerm,
+      location:
+        locationFilter === OPTIONS_INFORMATION_JSON.vacancyLocation[0].label
+          ? ""
+          : locationFilter,
+      type:
+        typeFilter === OPTIONS_INFORMATION_JSON.vacancyType[0].label
+          ? ""
+          : typeFilter,
+      level:
+        levelFilter === OPTIONS_INFORMATION_JSON.vacancyLevel[0].label
+          ? ""
+          : levelFilter,
+    });
+  };
 
-  // --- Funções de Ação ---
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setLocationFilter("");
+    setTypeFilter("");
+    setLevelFilter("");
+    fetchVacancies({});
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  const handleLocationFilterChange = (e) => {
+    setLocationFilter(e.target.value);
+    fetchVacancies({
+      title: searchTerm,
+      location: e.target.value,
+      type: typeFilter,
+      level: levelFilter,
+    });
+  };
+  const handleTypeFilterChange = (e) => {
+    setTypeFilter(e.target.value);
+    fetchVacancies({
+      title: searchTerm,
+      location: locationFilter,
+      type: e.target.value,
+      level: levelFilter,
+    });
+  };
+  const handleLevelFilterChange = (e) => {
+    setLevelFilter(e.target.value);
+    fetchVacancies({
+      title: searchTerm,
+      location: locationFilter,
+      type: typeFilter,
+      level: e.target.value,
+    });
+  };
+
   const handleApply = (applicationLink, vacancyTitle) => {
     if (!isAuthenticated) {
       showSnackbar(
         VALIDATION_ERROR_MESSAGES.authentication.login_required,
         "info"
       );
-      navigate("/login"); // Redireciona para login
+      navigate("/login");
     } else {
       if (applicationLink) {
         window.open(applicationLink, "_blank");
@@ -163,9 +169,8 @@ const VacanciesPage = () => {
     }
   };
 
-  // --- Funções de Admin (Protegidas) ---
   const handleOpenFormModal = () => {
-    if (!isAdminUser) {
+    if (!isAdmin()) {
       showSnackbar(
         VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
         "error"
@@ -177,7 +182,7 @@ const VacanciesPage = () => {
   };
 
   const handleEditVacancy = (vacancyId) => {
-    if (!isAdminUser) {
+    if (!isAdmin()) {
       showSnackbar(
         VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
         "error"
@@ -189,31 +194,41 @@ const VacanciesPage = () => {
     setIsFormModalOpen(true);
   };
 
-  const handleDeleteVacancy = (vacancyId, vacancyTitle) => {
-    if (!isAdminUser) {
+  const handleDeleteVacancyTrigger = (vacancyId, vacancyTitle) => {
+    if (!isAdmin()) {
       showSnackbar(
         VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
         "error"
       );
       return;
     }
-    setVacancyToDelete({ id: vacancyId, title: vacancyTitle }); // Define qual vaga será deletada
-    setConfirmDialogOpen(true); // Abre o diálogo
+    setVacancyToDelete({ id: vacancyId, title: vacancyTitle });
+    setConfirmDialogOpen(true);
   };
 
-  // NOVO: handleConfirmDeleteVacancy - Lógica real de exclusão após confirmação
-  const handleConfirmDeleteVacancy = () => {
+  const handleConfirmDeleteVacancy = async () => {
     if (vacancyToDelete) {
-      setVacancies((prevVacancies) =>
-        prevVacancies.filter((v) => v.id !== vacancyToDelete.id)
-      );
-      showSnackbar(
-        `Vaga "${vacancyToDelete.title}" excluída com sucesso!`,
-        "success"
-      );
-      setVacancyToDelete(null); // Limpa o estado
+      setLoading(true);
+      setApiMessage({ text: "", type: "" });
+      try {
+        await VacancyService.deleteVacancy(vacancyToDelete.id);
+        showSnackbar(
+          `Vaga "${vacancyToDelete.title}" excluída com sucesso!`,
+          "success"
+        );
+        fetchVacancies();
+        setVacancyToDelete(null);
+      } catch (error) {
+        console.error("Erro ao excluir vaga:", error);
+        const errorMessage =
+          error.response?.data?.message ||
+          FEEDBACK_MESSAGES.error_vacancy_deletion;
+        setApiMessage({ text: errorMessage, type: "error" });
+      } finally {
+        setLoading(false);
+      }
     }
-    setConfirmDialogOpen(false); // Fecha o diálogo
+    setConfirmDialogOpen(false);
   };
 
   const handleCancelDeleteVacancy = () => {
@@ -224,38 +239,55 @@ const VacanciesPage = () => {
   const handleCloseFormModal = () => {
     setIsFormModalOpen(false);
     setEditingVacancyData(null);
+    setApiMessage({ text: "", type: "" });
   };
 
-  const handleSubmitVacancyForm = (formData) => {
-    if (!isAdminUser) {
+  const handleSubmitVacancyForm = async (formData) => {
+    if (!isAdmin()) {
       showSnackbar(
         VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
         "error"
       );
       return;
     }
+    setLoading(true);
+    setApiMessage({ text: "", type: "" });
+    try {
+      const dataToSend = {
+        ...formData,
+        postedDate: formData.postedDate,
+        id:
+          formData.id &&
+          typeof formData.id === "string" &&
+          formData.id.startsWith("v")
+            ? parseInt(formData.id.substring(1))
+            : formData.id,
+      };
 
-    if (editingVacancyData) {
-      // Lógica de Edição
-      setVacancies((prevVacancies) =>
-        prevVacancies.map((v) => (v.id === formData.id ? formData : v))
-      );
-      showSnackbar(FEEDBACK_MESSAGES.successful_vacancy_edition, "success");
-    } else {
-      // Lógica de Cadastro
-      const newId = `v${
-        Math.max(...vacancies.map((v) => parseInt(v.id.substring(1)))) + 1
-      }`;
-      setVacancies((prevVacancies) => [
-        ...prevVacancies,
-        { ...formData, id: newId },
-      ]);
-      showSnackbar(
-        FEEDBACK_MESSAGES.successful_vacancy_registration,
-        "success"
-      );
+      let response;
+      if (editingVacancyData) {
+        response = await VacancyService.updateVacancy(
+          editingVacancyData.id,
+          dataToSend
+        );
+        showSnackbar(FEEDBACK_MESSAGES.successful_vacancy_edition, "success");
+      } else {
+        response = await VacancyService.createVacancy(dataToSend);
+        showSnackbar(
+          FEEDBACK_MESSAGES.successful_vacancy_registration,
+          "success"
+        );
+      }
+      fetchVacancies();
+      handleCloseFormModal();
+    } catch (error) {
+      console.error("Erro ao salvar vaga:", error);
+      const errorMessage =
+        error.response?.data?.message || FEEDBACK_MESSAGES.error_vacancy_save;
+      setApiMessage({ text: errorMessage, type: "error" });
+    } finally {
+      setLoading(false);
     }
-    handleCloseFormModal();
   };
 
   return (
@@ -279,10 +311,11 @@ const VacanciesPage = () => {
         >
           {VACANCY_PAGE_CONTENT.title}
         </Typography>
-        {isAdminUser && (
+        {isAdmin() && (
           <Button
             variant="contained"
             onClick={handleOpenFormModal}
+            disabled={loading}
             sx={{
               backgroundColor: COLORS_APP.brand_colors.stemine_purple,
               color: COLORS_APP.white,
@@ -296,7 +329,11 @@ const VacanciesPage = () => {
               },
             }}
           >
-            {VACANCY_PAGE_CONTENT.admin_add_vacancy_button}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              VACANCY_PAGE_CONTENT.admin_add_vacancy_button
+            )}
           </Button>
         )}
       </Box>
@@ -314,9 +351,23 @@ const VacanciesPage = () => {
         <TextField
           label={VACANCY_PAGE_CONTENT.search_placeholder}
           variant="outlined"
-          fullWidth={!["sm", "md", "lg"].includes("sm")}
+          fullWidth
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleApplyFilter();
+            }
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleApplyFilter}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           sx={{ flex: { sm: 1 }, minWidth: { sm: "200px" } }}
         />
 
@@ -327,9 +378,10 @@ const VacanciesPage = () => {
           variant="outlined"
           fullWidth
           value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value)}
+          onChange={handleLocationFilterChange}
           sx={{ width: { xs: "100%", sm: "auto" }, minWidth: { sm: "180px" } }}
         >
+          <MenuItem value="">Todas</MenuItem>
           {OPTIONS_INFORMATION_JSON.vacancyLocation.map((option) => (
             <MenuItem key={option.id} value={option.label}>
               {option.label}
@@ -344,9 +396,10 @@ const VacanciesPage = () => {
           variant="outlined"
           fullWidth
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
+          onChange={handleTypeFilterChange}
           sx={{ width: { xs: "100%", sm: "auto" }, minWidth: { sm: "150px" } }}
         >
+          <MenuItem value="">Todos</MenuItem>
           {OPTIONS_INFORMATION_JSON.vacancyType.map((option) => (
             <MenuItem key={option.id} value={option.label}>
               {option.label}
@@ -361,15 +414,28 @@ const VacanciesPage = () => {
           variant="outlined"
           fullWidth
           value={levelFilter}
-          onChange={(e) => setLevelFilter(e.target.value)}
+          onChange={handleLevelFilterChange}
           sx={{ width: { xs: "100%", sm: "auto" }, minWidth: { sm: "150px" } }}
         >
+          <MenuItem value="">Todos</MenuItem>
           {OPTIONS_INFORMATION_JSON.vacancyLevel.map((option) => (
             <MenuItem key={option.id} value={option.label}>
               {option.label}
             </MenuItem>
           ))}
         </TextField>
+        <Button
+          variant="outlined"
+          onClick={handleClearFilters}
+          sx={{
+            width: { xs: "100%", sm: "auto" },
+            minWidth: { sm: "120px" },
+            color: COLORS_APP.brand_colors.stemine_purple,
+            borderColor: COLORS_APP.brand_colors.stemine_purple,
+          }}
+        >
+          Limpar
+        </Button>
       </Box>
 
       {/* Contagem de Vagas Encontradas */}
@@ -377,65 +443,49 @@ const VacanciesPage = () => {
         variant="body1"
         sx={{ color: COLORS_APP.text.secondary, mb: { xs: 3, md: 4 } }}
       >
-        {filteredVacancies.length}{" "}
-        {VACANCY_PAGE_CONTENT.vacancies_found_message}
+        {vacancies.length} {VACANCY_PAGE_CONTENT.vacancies_found_message}
       </Typography>
 
-      {/* Listagem de VacancyCards (Flexbox) */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          flexWrap: "wrap",
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-          gap: { xs: "24px", sm: "32px", md: "24px" },
-        }}
-      >
-        {filteredVacancies.map((vacancy) => (
-          <Box
-            key={vacancy.id}
-            sx={{
-              flex: {
-                xs: "1 1 100%",
-                sm: "1 1 calc(50% - 16px)",
-                md: "1 1 calc(50% - 16px)",
-              },
-              maxWidth: {
-                xs: "100%",
-                sm: "calc(50% - 16px)",
-                md: "calc(50% - 16px)",
-              },
-              boxSizing: "border-box",
-            }}
-          >
+      {/* Mensagens da API */}
+      {apiMessage.text && (
+        <Alert severity={apiMessage.type} sx={{ mb: 3 }}>
+          {apiMessage.text}
+        </Alert>
+      )}
+
+      {/* Exibe o spinner de carregamento da lista de vagas */}
+      {loading && !apiMessage.text && (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!loading && !apiMessage.text && vacancies.length === 0 && (
+        <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
+          <Typography variant="h6" color="text.secondary">
+            {VACANCY_PAGE_CONTENT.no_vacancies_found}
+          </Typography>
+        </Box>
+      )}
+
+      {/* Listagem de VacancyCards (Grid) */}
+      <Grid container spacing={3}>
+        {vacancies.map((vacancy) => (
+          <Grid item xs={12} sm={6} md={6} key={vacancy.id}>
             <VacancyCard
-              id={vacancy.id}
-              title={vacancy.title}
-              company={vacancy.company}
-              description={vacancy.description}
-              requirements={vacancy.requirements}
-              benefits={vacancy.benefits}
-              location={vacancy.location}
-              type={vacancy.type}
-              level={vacancy.level}
-              applicationLink={vacancy.applicationLink}
-              postedDate={vacancy.postedDate}
-              isAdm={isAdminUser}
-              onApplyClick={handleApply}
-              onEditClick={handleEditVacancy}
-              onDeleteClick={handleDeleteVacancy}
+              vacancy={vacancy}
+              isAdm={isAdmin()}
+              onApplyClick={ () =>
+                handleApply(vacancy.applicationLink, vacancy.title)
+              }
+              onEditClick={() => handleEditVacancy(vacancy.id)}
+              onDeleteClick={() =>
+                handleDeleteVacancyTrigger(vacancy.id, vacancy.title)
+              }
             />
-          </Box>
+          </Grid>
         ))}
-        {filteredVacancies.length === 0 && (
-          <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              {VACANCY_PAGE_CONTENT.no_vacancies_found}
-            </Typography>
-          </Box>
-        )}
-      </Box>
+      </Grid>
 
       <ConfirmationDialog
         open={confirmDialogOpen}
@@ -445,7 +495,7 @@ const VacanciesPage = () => {
         message={
           `Tem certeza que deseja excluir a vaga "${
             vacancyToDelete?.title || "esta vaga"
-          }?" ` + VACANCY_PAGE_CONTENT.admin_confirmation_exclusion_message
+          }"? ` + VACANCY_PAGE_CONTENT.admin_confirmation_exclusion_message
         }
         confirmText="Excluir"
         confirmColor="error"
@@ -455,7 +505,7 @@ const VacanciesPage = () => {
       <VacancyFormModal
         open={isFormModalOpen}
         onClose={handleCloseFormModal}
-        onSubmit={handleSubmitVacancyForm}
+        onSave={handleSubmitVacancyForm}
         initialData={editingVacancyData}
       />
 

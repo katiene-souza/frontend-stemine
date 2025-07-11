@@ -11,7 +11,8 @@ export const validate_registration_form = (formData) => {
   }
 
   if (!formData.email.trim()) {
-    newErrors.email = VALIDATION_ERROR_MESSAGES.registration_form.email_required;
+    newErrors.email =
+      VALIDATION_ERROR_MESSAGES.registration_form.email_required;
     isValid = false;
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
     newErrors.email = VALIDATION_ERROR_MESSAGES.registration_form.email_invalid;
@@ -19,10 +20,12 @@ export const validate_registration_form = (formData) => {
   }
 
   if (!formData.password.trim()) {
-    newErrors.password = VALIDATION_ERROR_MESSAGES.registration_form.password_required;
+    newErrors.password =
+      VALIDATION_ERROR_MESSAGES.registration_form.password_required;
     isValid = false;
   } else if (formData.password.trim().length < 6) {
-    newErrors.password = VALIDATION_ERROR_MESSAGES.registration_form.password_min_length;
+    newErrors.password =
+      VALIDATION_ERROR_MESSAGES.registration_form.password_min_length;
     isValid = false;
   }
 
@@ -49,7 +52,8 @@ export const validate_registration_form = (formData) => {
       age--;
     }
     if (age < 18) {
-      newErrors.date_of_birth = VALIDATION_ERROR_MESSAGES.registration_form.age_min_18;
+      newErrors.date_of_birth =
+        VALIDATION_ERROR_MESSAGES.registration_form.age_min_18;
       isValid = false;
     }
   }
@@ -95,10 +99,12 @@ export const validate_registration_form = (formData) => {
   }
 
   if (!formData.biography.trim()) {
-    newErrors.biography = VALIDATION_ERROR_MESSAGES.registration_form.biography_required;
+    newErrors.biography =
+      VALIDATION_ERROR_MESSAGES.registration_form.biography_required;
     isValid = false;
   } else if (formData.biography.trim().length < 100) {
-    newErrors.biography = VALIDATION_ERROR_MESSAGES.registration_form.biography_min_length;
+    newErrors.biography =
+      VALIDATION_ERROR_MESSAGES.registration_form.biography_min_length;
     isValid = false;
   }
 

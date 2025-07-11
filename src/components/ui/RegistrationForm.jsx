@@ -15,8 +15,8 @@ import {
   Stepper,
   Step,
   StepLabel,
-  CircularProgress, // Para feedback de carregamento
-  Alert, // Para exibir mensagens da API
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 
 import { Link } from "react-router-dom";
@@ -26,11 +26,9 @@ import { REGISTRATION_FORMS_CONTENT } from "../../constants/Messages";
 import { OPTIONS_INFORMATION_JSON } from "../../utils/OptionsInformationJson";
 
 import { validate_registration_form } from "../../utils/registrationValidation";
-import { useAuth } from "../../contexts/AuthContext"; // <--- Importe useAuth
+import { useAuth } from "../../contexts/AuthContext";
 
-// Remova a prop 'onSubmit', pois a função 'register' do AuthContext será usada diretamente
 const RegistrationForm = ({ initialData = {} }) => {
-  // <--- LINHA ALTERADA: Removida 'onSubmit'
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: initialData.name || "",
@@ -38,7 +36,7 @@ const RegistrationForm = ({ initialData = {} }) => {
     password: initialData.password || "",
     confirm_password: initialData.confirm_password || "",
     date_of_birth: initialData.date_of_birth || "",
-    profile_photo: initialData.profile_photo || null, // Objeto File
+    profile_photo: initialData.profile_photo || null,
 
     area_of_interest: initialData.area_of_interest || "",
     experience_level: initialData.experience_level || "",
@@ -59,19 +57,19 @@ const RegistrationForm = ({ initialData = {} }) => {
     adaptation_needed: initialData.adaptation_needed || "",
 
     linkedin: initialData.linkedin || "",
-    portfolio: initialData.portfolio || "", // Corrigido para 'portfolio'
+    portfolio: initialData.portfolio || "",
     github: initialData.github || "",
     lattes: initialData.lattes || "",
-    curriculum_file: initialData.curriculum_file || null, // Objeto File
+    curriculum_file: initialData.curriculum_file || null,
 
     current_challenges: initialData.current_challenges || [],
   });
 
   const [errors, setErrors] = useState({});
-  const [apiMessage, setApiMessage] = useState({ text: "", type: "" }); // Para mensagens da API
-  const [loading, setLoading] = useState(false); // Para estado de carregamento
+  const [apiMessage, setApiMessage] = useState({ text: "", type: "" });
+  const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth(); // <--- Obtenha a função 'register' do contexto
+  const { register } = useAuth();
 
   const steps = [
     "Dados de Acesso",
@@ -110,7 +108,6 @@ const RegistrationForm = ({ initialData = {} }) => {
 
     let isValidStep = true;
 
-    // Apenas valida os campos do passo atual para navegação
     switch (step) {
       case 0: // Dados de Acesso
         if (
@@ -119,7 +116,7 @@ const RegistrationForm = ({ initialData = {} }) => {
           fullValidation.errors.password ||
           fullValidation.errors.confirm_password ||
           fullValidation.errors.date_of_birth ||
-          fullValidation.errors.profile_photo // Opcional: validar foto de perfil
+          fullValidation.errors.profile_photo
         ) {
           isValidStep = false;
         }
@@ -165,7 +162,7 @@ const RegistrationForm = ({ initialData = {} }) => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     } else {
-      handleSubmit(); // Chama o envio final ao chegar ao último passo
+      handleSubmit();
     }
   };
 
@@ -173,16 +170,14 @@ const RegistrationForm = ({ initialData = {} }) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // Adapte handleSubmit para chamar 'register' do AuthContext
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault(); // Previne o comportamento padrão do formulário se chamado por evento
+    if (e) e.preventDefault();
     const { errors: newErrors, isValid } = validate_registration_form(formData);
     setErrors(newErrors);
-    setApiMessage({ text: "", type: "" }); // Limpa mensagens anteriores
+    setApiMessage({ text: "", type: "" });
 
     if (!isValid) {
       console.error("Erros de validação no envio final:", newErrors);
-      // Volta para o primeiro passo com erro
       const firstErrorField = Object.keys(newErrors)[0];
       if (firstErrorField) {
         if (
@@ -225,48 +220,38 @@ const RegistrationForm = ({ initialData = {} }) => {
         )
           setActiveStep(4);
       }
-      return; // Interrompe se houver erros de validação
+      return;
     }
 
-    // Se a validação frontend passou, tenta registrar no backend
     setLoading(true);
     try {
-      // Adapte os dados para o formato esperado pelo seu SignupRequest.java no backend
       const dataToSend = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        dateOfBirth: formData.date_of_birth, // Mapeia 'date_of_birth' do front para 'dateOfBirth' do back
+        dateOfBirth: formData.date_of_birth,
         adaptationNeeded: formData.adaptation_needed,
         areaOfInterest: formData.area_of_interest,
         biography: formData.biography,
         hasDisability: formData.has_disability,
         disabilityType: formData.disability_type,
         experienceLevel: formData.experience_level,
-        githubUrl: formData.github, // Mapeia 'github' para 'githubUrl'
-        lattesUrl: formData.lattes, // Mapeia 'lattes' para 'lattesUrl'
-        linkedinUrl: formData.linkedin, // Mapeia 'linkedin' para 'linkedinUrl'
-        portfolioUrl: formData.portfolio, // Mapeia 'portfolio' para 'portfolioUrl'
+        githubUrl: formData.github,
+        lattesUrl: formData.lattes,
+        linkedinUrl: formData.linkedin,
+        portfolioUrl: formData.portfolio,
         purposeOfMentoring: formData.purpose_of_mentoring,
-        // Campos de arrays: Se o backend espera um array de strings, envie como está.
-        // Se espera JSON string, use JSON.stringify()
         currentChallenges: formData.current_challenges,
         timeAvailability: formData.time_availability,
-        // --- ATENÇÃO PARA ARQUIVOS ---
-        // profile_photo e curriculum_file são objetos File no frontend.
-        // O backend espera URLs (String) em SignupRequest, ou precisaria de MultipartFile.
-        // Por simplicidade, enviamos null para as URLs por enquanto.
-        // O upload real de arquivos deve ser feito separadamente para gerar essas URLs.
-        profilePhotoUrl: null, // formData.profile_photo ? 'URL_DO_UPLOAD_AQUI' : null,
-        curriculumFileUrl: null, // formData.curriculum_file ? 'URL_DO_UPLOAD_AQUI' : null,
+        profilePhotoUrl: null,
+        curriculumFileUrl: null,
       };
 
-      await register(dataToSend); // <--- Chama a função 'register' do AuthContext
+      await register(dataToSend);
       setApiMessage({
         text: "Cadastro realizado com sucesso! Você será redirecionado para o login.",
         type: "success",
       });
-      // O redirecionamento para /login é tratado dentro do AuthContext
     } catch (err) {
       console.error(
         "Erro no cadastro:",
@@ -486,7 +471,7 @@ const RegistrationForm = ({ initialData = {} }) => {
               sx={{ mb: 3 }}
             />
 
-            {/* Campo Disponibilidade de Horário - AGORA É MULTI-SELECT */}
+            {/* Campo Disponibilidade de Horário */}
             <TextField
               select
               name="time_availability"
