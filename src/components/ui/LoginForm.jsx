@@ -43,10 +43,12 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = VALIDATION_ERROR_MESSAGES.authentication.password_required;
+      newErrors.password =
+        VALIDATION_ERROR_MESSAGES.authentication.password_required;
       isValid = false;
     } else if (formData.password.trim().length < 6) {
-      newErrors.password = VALIDATION_ERROR_MESSAGES.authentication.password_min_length;
+      newErrors.password =
+        VALIDATION_ERROR_MESSAGES.authentication.password_min_length;
       isValid = false;
     }
 
@@ -150,7 +152,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
         )}
       </Button>
 
-      {/* Opção de Logar como Administrador */}
+      {/* Opção de Logar como Administrador 
       <Box
         sx={{
           display: "flex",
@@ -177,13 +179,15 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
             },
           }}
         >
+        
           {loading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
             REGISTRATION_FORMS_CONTENT.login.admin_login.button
           )}
         </Button>
-      </Box>
+      </Box>´
+      */}
 
       {/* Opção de Cadastrar-se */}
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>

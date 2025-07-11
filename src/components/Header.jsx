@@ -47,7 +47,7 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  console.log(user)
+  console.log(user);
 
   const handleLogout = () => {
     logout();
@@ -59,7 +59,7 @@ const Header = () => {
       position="static"
       sx={{
         backgroundColor: COLORS_APP.white,
-        boxShadow: COLORS_APP.background.box_shadow_thick
+        boxShadow: COLORS_APP.background.box_shadow_thick,
       }}
     >
       <Toolbar>
@@ -75,7 +75,7 @@ const Header = () => {
             fontWeight: "bold",
           }}
         >
-          <img src='src\assets\logo-stemine.png' width="230px"/>
+          <img src="src\assets\logo-stemine.png" width="230px" />
         </Typography>
 
         <Box
@@ -158,19 +158,22 @@ const Header = () => {
               >
                 <MenuItem
                   onClick={() => {
-                    handleMenuClose(); /* navigate('/profile'); */
+                    handleMenuClose();
                   }}
                 >
+                {/*
                   <ListItemIcon>
                     <PersonIcon
                       fontSize="small"
                       sx={{ color: COLORS_APP.text.secondary }}
                     />
                   </ListItemIcon>
-                  <ListItemText
-                    primary="Meu Perfil"
+                  
+                    <ListItemText 
+                      primary="Meu Perfil"
                     sx={{ color: COLORS_APP.text.primary }}
                   />
+                */}
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
                 <MenuItem onClick={handleLogout}>
@@ -277,6 +280,8 @@ const Header = () => {
                   },
                 }}
               >
+
+              {/*
                 <ListItemIcon>
                   {" "}
                   <PersonIcon
@@ -285,6 +290,7 @@ const Header = () => {
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Meu Perfil" />
+              */}
               </ListItem>
               <ListItem
                 onClick={() => {

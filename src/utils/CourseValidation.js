@@ -48,39 +48,34 @@ export const validate_course_form = (formData) => {
     isValid = false;
   }
 
-  if (
-    !formData.imageUrl ||
-    !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.imageUrl)
-  ) {
+  const urlRegex = /^https?:\/\/.+\.(jpg|jpeg|png|gif|svg|webp)$/i;
+
+  if (!formData.imageUrl || !urlRegex.test(formData.imageUrl)) {
     newErrors.imageUrl =
       VALIDATION_ERROR_MESSAGES.course_form.image_url_invalid;
     isValid = false;
   }
-  
-  if (
-    !formData.company_logo_url ||
-    !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.company_logo_url)
-  ) {
-    newErrors.company_logo_url =
+
+  if (!formData.companyLogoUrl || !urlRegex.test(formData.companyLogoUrl)) {
+    newErrors.companyLogoUrl =
       VALIDATION_ERROR_MESSAGES.course_form.company_logo_url_invalid;
     isValid = false;
   }
 
-  if (
-    !formData.course_url ||
-    !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.course_url)
-  ) {
-    newErrors.course_url =
+  const genericUrlRegex = /^https?:\/\/[^\s$.?#].[^\s]*$/i;
+  if (!formData.courseUrl || !genericUrlRegex.test(formData.courseUrl)) {
+    newErrors.courseUrl =
       VALIDATION_ERROR_MESSAGES.course_form.course_url_invalid;
     isValid = false;
   }
 
-  if (!formData.category || formData.category.length === 0) {
-    newErrors.category =
+  if (!formData.categories || formData.categories.length === 0) {
+    newErrors.categories =
       VALIDATION_ERROR_MESSAGES.course_form.category_required;
     isValid = false;
-  } else if (formData.category.length > 2) {
-    newErrors.category = VALIDATION_ERROR_MESSAGES.course_form.category_max_two;
+  } else if (formData.categories.length > 2) {
+    newErrors.categories =
+      VALIDATION_ERROR_MESSAGES.course_form.category_max_two;
     isValid = false;
   }
 

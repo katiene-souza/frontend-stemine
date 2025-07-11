@@ -1,17 +1,21 @@
 // src/components/CourseFormModal.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
   TextField,
   MenuItem,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Dialog, // Componente Dialog
+  DialogTitle, // Componente DialogTitle
+  DialogContent, // Componente DialogContent
+  DialogActions, // Componente DialogActions
   Button,
+  Chip, // <--- Adicionado para renderizar categorias selecionadas
+  FormControl, // <--- Adicionado para o Select de categorias
+  InputLabel, // <--- Adicionado para o Select de categorias
+  Select, // <--- Adicionado para o Select de categorias
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
@@ -20,53 +24,129 @@ import LinkIcon from "@mui/icons-material/Link";
 
 import { COLORS_APP } from "../../constants/Colors";
 import { OPTIONS_INFORMATION_JSON } from "../../utils/OptionsInformationJson";
-import { COURSE_PAGE_CONTENT, FORMS_PLACEHOLDERS } from "../../constants/Messages";
+import {
+  COURSE_PAGE_CONTENT,
+  FORMS_PLACEHOLDERS,
+} from "../../constants/Messages";
 import { validate_course_form } from "../../utils/CourseValidation";
 
-const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
+const CourseFormModal = ({ open, onClose, onSave, initialData = {} }) => {
   const [formData, setFormData] = useState({
-    title: initialData?.title ?? "",
-    description: initialData?.description ?? "",
-    durationValue: initialData?.durationValue ?? "",
-    durationUnit: initialData?.durationUnit ?? "",
-    level: initialData?.level ?? "",
-    category: initialData?.category ?? [],
-    imageUrl: initialData?.imageUrl ?? "",
-    company_logo_url: initialData?.company_logo_url ?? "",
-    course_url: initialData?.course_url ?? "",
+    id: null,
+    title: "",
+    description: "",
+    durationValue: "",
+    durationUnit: "",
+    level: "",
+    categories: [],
+    imageUrl: "",
+    companyLogoUrl: "",
+    courseUrl: "",
   });
+
+  console.log(formData);
 
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    if (open) {
+      if (initialData && Object.keys(initialData).length > 0) {
+        setFormData({
+          id: initialData.id ?? null,
+          title: initialData.title ?? "",
+          description: initialData.description ?? "",
+          durationValue: initialData.durationValue ?? "",
+          durationUnit: initialData.durationUnit
+            ? initialData.durationUnit.charAt(0).toUpperCase() +
+              initialData.durationUnit.slice(1).toLowerCase()
+            : "",
+          level: initialData.level ?? "",
+          categories: initialData.categories ?? [],
+          imageUrl: initialData.imageUrl ?? "",
+          companyLogoUrl: initialData.companyLogoUrl ?? "",
+          courseUrl: initialData.courseUrl ?? "",
+        });
+      } else {
+        setFormData({
+          id: null,
+          title: "",
+          description: "",
+          durationValue: "",
+          durationUnit: "",
+          level: "",
+          categories: [],
+          imageUrl: "",
+          companyLogoUrl: "",
+          courseUrl: "",
+        });
+      }
+      setErrors({});
+    }
+  }, [initialData, open]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "category") {
+    if (
+      name === "description" &&
+      typeof value === "string" &&
+      value.length > 97
+    ) {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: typeof value === "string" ? value.split(",") : value,
+        [name]: value.substring(0, 97),
       }));
     } else {
-      if (name === "description" && value.length > 97) {
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value.substring(0, 97),
-        }));
-      } else {
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-      }
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
-
     if (errors[name]) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
   };
 
+  const handleCategoriesChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFormData((prevData) => ({
+      ...prevData,
+      categories: typeof value === "string" ? value.split(",") : value,
+    }));
+    if (errors.categories) {
+      setErrors((prevErrors) => ({ ...prevErrors, categories: "" }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(
+      "--- CourseFormModal: handleSubmit acionado (botão Salvar) ---"
+    );
     const { errors: newErrors, isValid } = validate_course_form(formData);
     setErrors(newErrors);
+    console.log("CourseFormModal: Erros de validação (newErrors):", newErrors);
+    console.log("CourseFormModal: Formulário é válido (isValid):", isValid);
+
     if (isValid) {
-      onSubmit(formData);
+      const dataToSend = {
+        id: formData.id,
+        title: formData.title,
+        description: formData.description,
+        durationValue: formData.durationValue,
+        durationUnit: formData.durationUnit,
+        level: formData.level,
+        categories: formData.categories,
+        imageUrl: formData.imageUrl,
+        companyLogoUrl: formData.companyLogoUrl,
+        courseUrl: formData.courseUrl,
+      };
+
+      console.log(
+        "CourseFormModal: Validação SUCESSO. Chamando onSave com:",
+        dataToSend
+      );
+      onSave(dataToSend);
+    } else {
+      console.log("CourseFormModal: Validação FALHOU. Não chamando onSave.");
     }
   };
 
@@ -93,7 +173,10 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
           component="div"
           sx={{ fontWeight: "bold", color: COLORS_APP.text.primary }}
         >
-          {COURSE_PAGE_CONTENT.admin_add_course_button}
+          {initialData
+            ? COURSE_PAGE_CONTENT.admin_edit_course_button
+            : COURSE_PAGE_CONTENT.admin_add_course_button}{" "}
+          {/* Título dinâmico */}
         </Typography>
         <IconButton
           aria-label="close"
@@ -114,7 +197,6 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
 
       <DialogContent dividers sx={{ p: 4, pt: 2 }}>
         <form onSubmit={handleSubmit}>
-          {/* Título do curso */}
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -132,7 +214,6 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             helperText={errors.title}
             sx={{ mb: 3 }}
           />
-
           {/* Descrição */}
           <Typography
             variant="body1"
@@ -161,7 +242,6 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             }
             sx={{ mb: 3 }}
           />
-
           {/* Duração e nível */}
           <Box
             sx={{
@@ -226,7 +306,6 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
                 ))}
             </TextField>
           </Box>
-
           {/* Categoria */}
           <Box
             sx={{
@@ -236,51 +315,48 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
               mb: 3,
             }}
           >
-            <TextField
-              select
-              name="category"
-              label={COURSE_PAGE_CONTENT.admin_course_form.category}
-              placeholder={FORMS_PLACEHOLDERS.course_form.Category}
-              variant="outlined"
-              value={formData.category}
-              onChange={handleChange}
-              error={!!errors.category}
-              helperText={errors.category}
-              fullWidth
-              SelectProps={{
-                multiple: true,
-                renderValue: (selected) => (
+            <FormControl fullWidth sx={{ flex: 1 }} error={!!errors.categories}>
+              <InputLabel id="categories-label">
+                {COURSE_PAGE_CONTENT.admin_course_form.categories}
+              </InputLabel>
+              <Select
+                labelId="categories-label"
+                name="categories"
+                multiple
+                value={formData.categories}
+                onChange={handleCategoriesChange}
+                renderValue={(selected) => (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((value) => (
-                      <Typography
+                      <Chip
                         key={value}
-                        variant="body2"
+                        label={value}
                         sx={{
                           backgroundColor:
                             COLORS_APP.brand_colors.stemine_purple_light,
                           color: COLORS_APP.brand_colors.stemine_purple,
-                          borderRadius: "4px",
-                          padding: "2px 8px",
                         }}
-                      >
-                        {value}
-                      </Typography>
+                      />
                     ))}
                   </Box>
-                ),
-              }}
-              sx={{ flex: 1 }}
-            >
-              {OPTIONS_INFORMATION_JSON.category
-                .filter((option) => option.id !== "all_categories")
-                .map((option) => (
-                  <MenuItem key={option.id} value={option.label}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-            </TextField>
+                )}
+                label={COURSE_PAGE_CONTENT.admin_course_form.categories}
+              >
+                {OPTIONS_INFORMATION_JSON.categories
+                  .filter((option) => option.id !== "all_categories")
+                  .map((option) => (
+                    <MenuItem key={option.id} value={option.label}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+              </Select>
+              {errors.categories && (
+                <Typography variant="caption" color="error">
+                  {errors.categories}
+                </Typography>
+              )}
+            </FormControl>
           </Box>
-
           {/* Imagem do curso */}
           <Typography
             variant="body1"
@@ -306,20 +382,20 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             helperText={errors.imageUrl}
             sx={{ mb: 3 }}
           />
-
           {/* Logo da empresa */}
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
           >
-           {COURSE_PAGE_CONTENT.admin_course_form.partner_logo_url}
+            {COURSE_PAGE_CONTENT.admin_course_form.partner_logo_url}
           </Typography>
           <TextField
-            name="company_logo_url"
+            name="companyLogoUrl"
+            label="URL Logo da Empresa"
             placeholder={FORMS_PLACEHOLDERS.course_form.company_logo_url}
             variant="outlined"
             fullWidth
-            value={formData.company_logo_url}
+            value={formData.companyLogoUrl}
             onChange={handleChange}
             InputProps={{
               startAdornment: (
@@ -328,11 +404,11 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
                 />
               ),
             }}
-            error={!!errors.company_logo_url}
-            helperText={errors.company_logo_url}
+            error={!!errors.companyLogoUrl}
+            helperText={errors.companyLogoUrl}
             sx={{ mb: 3 }}
           />
-
+          {/* URL do curso */}
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -340,14 +416,15 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             {COURSE_PAGE_CONTENT.admin_course_form.course_url}
           </Typography>
           <TextField
-            name="course_url"
+            name="courseUrl"
+            label="URL do Curso"
             placeholder={
               FORMS_PLACEHOLDERS.course_form.course_url ||
               "URL para a página de inscrição do curso"
             }
             variant="outlined"
             fullWidth
-            value={formData.course_url}
+            value={formData.courseUrl}
             onChange={handleChange}
             InputProps={{
               startAdornment: (
@@ -356,8 +433,8 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
                 />
               ),
             }}
-            error={!!errors.course_url}
-            helperText={errors.course_url}
+            error={!!errors.courseUrl}
+            helperText={errors.courseUrl}
             sx={{ mb: 3 }}
           />
         </form>
@@ -366,6 +443,7 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
       <DialogActions sx={{ p: 3, justifyContent: "center" }}>
         <Button
           variant="contained"
+          type="submit"
           onClick={handleSubmit}
           sx={{
             backgroundColor: COLORS_APP.brand_colors.stemine_purple,
@@ -380,7 +458,9 @@ const CourseFormModal = ({ open, onClose, onSubmit, initialData = {} }) => {
             },
           }}
         >
-          {COURSE_PAGE_CONTENT.admin_add_course_button}
+          {initialData
+            ? "Salvar Alterações"
+            : COURSE_PAGE_CONTENT.admin_add_course_button}
         </Button>
       </DialogActions>
     </Dialog>

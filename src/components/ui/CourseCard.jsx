@@ -4,23 +4,28 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { COLORS_APP } from "../../constants/Colors";
 import CategoryTag from "./CategoryTag";
 import { COURSE_PAGE_CONTENT } from "../../constants/Messages";
-import { Link } from "react-router-dom";
 
 const CourseCard = ({
-  imageUrl,
-  level,
-  categories = [],
-  title,
-  description,
-  duration,
-  company_logo_url,
-  courseUrl,
+  course,
   onSubscribeClick,
   isAdm = false,
   onEditClick,
   onDeleteClick,
   ...rest
 }) => {
+  const {
+    imageUrl,
+    level,
+    categories = [],
+    title,
+    description,
+    durationValue,
+    durationUnit,
+    companyLogoUrl,
+  } = course;
+
+  const duration = `${durationValue} ${durationUnit}`;
+
   const getLevelColor = (levelText) => {
     switch (levelText?.toLowerCase()) {
       case "básico":
@@ -230,10 +235,10 @@ const CourseCard = ({
             marginTop: "auto",
           }}
         >
-          {company_logo_url ? (
+          {companyLogoUrl ? (
             <Box
               component="img"
-              src={company_logo_url}
+              src={companyLogoUrl}
               alt="Logo Empresa"
               sx={{ height: "30px", maxWidth: "80px", objectFit: "contain" }}
             />
@@ -247,8 +252,6 @@ const CourseCard = ({
           )}
 
           <Button
-            component={Link}
-            to={courseUrl}
             variant="contained"
             onClick={onSubscribeClick}
             disabled={isAdm === true}
@@ -265,7 +268,7 @@ const CourseCard = ({
               },
             }}
           >
-            {COURSE_PAGE_CONTENT.enroll_button}
+            { COURSE_PAGE_CONTENT.enroll_button}
           </Button>
         </Box>
       </Box>
