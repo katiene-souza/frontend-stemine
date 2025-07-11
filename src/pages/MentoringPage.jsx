@@ -22,7 +22,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import MentorCard from "../components/ui/MentorCard";
 
-// Dados mockados de mentoras
+
 const mockMentors = [
   {
     id: 1,
@@ -98,7 +98,7 @@ const MentoringPage = () => {
     showSnackbar(`Visualizando perfil completo de ${mentorName}`, "info");
   };
 
-  // const handleEditMentor = (mentorId) => {
+  
   //   if (!isAdminUser) {
   //     showSnackbar(
   //       VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
@@ -129,7 +129,7 @@ const MentoringPage = () => {
       maxWidth="false"
       sx={{ py: { xs: 6, md: 8 }, px: { xs: 2, sm: 4, md: 8 } }}
     >
-      {/* 1. Banner Principal (`Programa de Mentoria`) - Sem alterações */}
+      
       <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
         <Typography
           variant="h3"
@@ -140,7 +140,7 @@ const MentoringPage = () => {
         </Typography>
       </Box>
 
-      {/* 2. Como Funciona a Mentoria na STEMINE? - Sem alterações */}
+      
       <Box
         sx={{
           display: "flex",
@@ -150,7 +150,7 @@ const MentoringPage = () => {
           mb: { xs: 6, md: 8 },
         }}
       >
-        {/* Lado Esquerdo: Descrição */}
+        
         <Box sx={{ flex: 1, boxSizing: "border-box" }}>
           <Paper
             elevation={0}
@@ -193,7 +193,7 @@ const MentoringPage = () => {
                   marginTop: "40px",
                   fontSize: { xs: "1rem", md: "1.1rem" },
                   fontWeight: "bold",
-                  borderRadius: "8px",
+                  borderRadius: "50px",
                   "&:hover": {
                     backgroundColor:
                       COLORS_APP.brand_colors.stemine_purple_dark,
@@ -216,7 +216,7 @@ const MentoringPage = () => {
             </>
           </Paper>
         </Box>
-        {/* Lado Direito: Passos Numerados */}
+        
         <Box sx={{ flex: 1, boxSizing: "border-box" }}>
           <Paper
             elevation={0}
@@ -228,7 +228,7 @@ const MentoringPage = () => {
             }}
           >
             <List>
-              {/* Passos ... */}
+              
               <ListItem sx={{ alignItems: "flex-start", mb: 1.5 }}>
                 <ListItemIcon sx={{ minWidth: "35px", mt: "4px" }}>
                   <Typography
@@ -379,7 +379,7 @@ const MentoringPage = () => {
         </Box>
       </Box>
 
-      {/* 4. "Nossas mentoras" - VISÍVEL APENAS PARA ADMINS */}
+      
       {isAdminUser && (
         <Box sx={{ mb: { xs: 6, md: 8 } }}>
           <Typography
@@ -450,7 +450,7 @@ const MentoringPage = () => {
                 textTransform: "none",
                 fontWeight: "bold",
                 padding: "12px 24px",
-                borderRadius: "8px",
+                borderRadius: "50px",
                 "&:hover": {
                   backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
                 },
@@ -462,7 +462,7 @@ const MentoringPage = () => {
         </Box>
       )}
 
-      {/* Snackbar para feedback */}
+      
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

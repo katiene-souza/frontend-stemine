@@ -56,7 +56,7 @@ const CourseCard = ({
       }}
       {...rest}
     >
-      {/* Imagem do Curso e Tags/Botões de Admin */}
+      
       <Box
         sx={{
           height: "160px",
@@ -70,7 +70,7 @@ const CourseCard = ({
           backgroundPosition: "center",
         }}
       >
-        {/* Placeholder de imagem se não houver URL */}
+
         {!imageUrl && (
           <img
             src="data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path fill='%23666' d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 19V5h14l-1.5 3-2.5-3.5L11 13.5z'/></svg>"
@@ -260,9 +260,9 @@ const CourseCard = ({
               color: COLORS_APP.white,
               textTransform: "none",
               padding: "8px 16px",
+              borderRadius: "50px",
               fontSize: "0.85rem",
               fontWeight: "bold",
-              borderRadius: "50px",
               "&:hover": {
                 backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
               },

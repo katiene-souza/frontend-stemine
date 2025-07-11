@@ -1,5 +1,3 @@
-// src/components/CourseFormModal.jsx
-
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -7,15 +5,15 @@ import {
   TextField,
   MenuItem,
   IconButton,
-  Dialog, // Componente Dialog
-  DialogTitle, // Componente DialogTitle
-  DialogContent, // Componente DialogContent
-  DialogActions, // Componente DialogActions
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
   Button,
-  Chip, // <--- Adicionado para renderizar categorias selecionadas
-  FormControl, // <--- Adicionado para o Select de categorias
-  InputLabel, // <--- Adicionado para o Select de categorias
-  Select, // <--- Adicionado para o Select de categorias
+  Chip,
+  FormControl, 
+  InputLabel, 
+  Select,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
@@ -306,7 +304,7 @@ const CourseFormModal = ({ open, onClose, onSave, initialData = {} }) => {
                 ))}
             </TextField>
           </Box>
-          {/* Categoria */}
+         
           <Box
             sx={{
               display: "flex",
@@ -382,7 +380,7 @@ const CourseFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             helperText={errors.imageUrl}
             sx={{ mb: 3 }}
           />
-          {/* Logo da empresa */}
+         
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -408,7 +406,7 @@ const CourseFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             helperText={errors.companyLogoUrl}
             sx={{ mb: 3 }}
           />
-          {/* URL do curso */}
+          
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}

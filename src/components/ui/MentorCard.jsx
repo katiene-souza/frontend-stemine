@@ -2,7 +2,7 @@ import { Box, Typography, Paper, Button, Avatar } from "@mui/material";
 import { COLORS_APP } from "../../constants/Colors";
 import PersonIcon from "@mui/icons-material/Person";
 import { MENTORING_PAGE_CONTENT } from "../../constants/Messages";
-// Adicione ícones para editar e deletar
+
 // import EditIcon from '@mui/icons-material/Edit';
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import IconButton from '@mui/material/IconButton';
@@ -47,8 +47,7 @@ const MentorCard = ({
   isAdm = false,
   //onScheduleMentoring,
   onViewProfile,
-  // onEditClick,     // Se for para admin editar o mentor
-  // onDeleteClick,   // Se for para admin deletar o mentor
+ 
   ...rest
 }) => {
   return (
@@ -139,7 +138,7 @@ const MentorCard = ({
           )} */}
         </Box>
 
-        {/* Especialidades */}
+        
         <Typography
           variant="subtitle2"
           sx={{ fontWeight: "bold", color: COLORS_APP.text.primary, mb: 1 }}
@@ -173,7 +172,7 @@ const MentorCard = ({
           Descrição: {description}
         </Typography>
 
-        {/* Slots de Mentoria (Visível para Admin para gestão) */}
+       
         {isAdm && (
           <Typography
             variant="body2"
@@ -188,7 +187,7 @@ const MentorCard = ({
           </Typography>
         )}
 
-        {/* Botões de Ação (Agendar e Ver Perfil) */}
+       
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 1, mt: "auto" }}
         >

@@ -254,7 +254,7 @@ const CoursesPage = () => {
       maxWidth="lg"
       sx={{ py: { xs: 6, md: 8 }, px: { xs: 2, sm: 4, md: 8 } }}
     >
-      {/* Cabeçalho da Página de Cursos */}
+     
       <Box
         sx={{
           display: "flex",
@@ -297,7 +297,7 @@ const CoursesPage = () => {
         )}
       </Box>
 
-      {/* Seção de Busca e Filtros */}
+
       <Box
         sx={{
           display: "flex",
@@ -377,13 +377,14 @@ const CoursesPage = () => {
             minWidth: { sm: "120px" },
             color: COLORS_APP.brand_colors.stemine_purple,
             borderColor: COLORS_APP.brand_colors.stemine_purple,
+            borderRadius: "50px",
           }}
         >
           Limpar
         </Button>
       </Box>
 
-      {/* Contagem de Cursos Encontrados */}
+
       <Typography
         variant="body1"
         sx={{ color: COLORS_APP.text.secondary, mb: { xs: 3, md: 4 } }}
@@ -411,7 +412,7 @@ const CoursesPage = () => {
         </Box>
       )}
 
-      {/* Listagem de CourseCards */}
+
 
       <Box
         sx={{
@@ -455,7 +456,7 @@ const CoursesPage = () => {
         ))}
       </Box>
 
-      {/* Renderiza a CourseFormModal */}
+
       <CourseFormModal
         open={isModalOpen}
         onClose={handleCloseModal}
@@ -463,7 +464,7 @@ const CoursesPage = () => {
         initialData={editingCourseData}
       />
 
-      {/* ConfirmationDialog para exclusão */}
+
       <ConfirmationDialog
         open={confirmDialogOpen}
         onClose={handleCancelDeleteCourse}
@@ -479,7 +480,7 @@ const CoursesPage = () => {
         confirmColor="error"
       />
 
-      {/* Snackbar para feedback de sucesso/erro */}
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

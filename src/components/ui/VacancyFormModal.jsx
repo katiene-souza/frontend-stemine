@@ -181,7 +181,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             sx={{ mb: 3 }}
           />
 
-          {/* Empresa */}
+        
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -210,7 +210,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             sx={{ mb: 3 }}
           />
 
-          {/* Descrição da Vaga */}
+        
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -232,7 +232,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             sx={{ mb: 3 }}
           />
 
-          {/* Requisitos */}
+          
           <Typography
             variant="body1"
             sx={{ fontWeight: "bold", mb: 1, color: COLORS_APP.text.primary }}
@@ -276,7 +276,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
             sx={{ mb: 3 }}
           />
 
-          {/* Localização, Tipo, Nível (em linha) */}
+      
           <Box
             sx={{
               display: "flex",
@@ -285,7 +285,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
               mb: 3,
             }}
           >
-            {/* Localização */}
+           
             <FormControl fullWidth sx={{ flex: 1 }} error={!!errors.location}>
               <InputLabel id="location-label">
                 {VACANCY_PAGE_CONTENT.admin_vacancy_form.location}
@@ -307,7 +307,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
                 }}
               >
                 <MenuItem value="">Todas as Localizações</MenuItem>{" "}
-                {/* Opção padrão */}
+               
                 {OPTIONS_INFORMATION_JSON.vacancyLocation.map((option) => (
                   <MenuItem key={option.id} value={option.label}>
                     {option.label}
@@ -366,7 +366,7 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
               mb: 3,
             }}
           >
-            {/* Nível */}
+            
             <FormControl fullWidth sx={{ flex: 1 }} error={!!errors.level}>
               <InputLabel id="level-label">
                 {VACANCY_PAGE_CONTENT.admin_vacancy_form.level}
@@ -447,7 +447,11 @@ const VacancyFormModal = ({ open, onClose, onSave, initialData = {} }) => {
 
           {/* Botões de Ação */}
           <DialogActions sx={{ p: 3, justifyContent: "center" }}>
-            <Button variant="outlined" onClick={onClose} sx={{ mr: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={onClose}
+              sx={{ mr: 2, borderRadius: "50px", padding: "12px 30px" }}
+            >
               Cancelar
             </Button>
             <Button

@@ -63,7 +63,7 @@ const Header = () => {
       }}
     >
       <Toolbar>
-        {/* Logo da STEMINE (Link) */}
+        
         <Typography
           variant="h6"
           component={Link}
@@ -84,7 +84,7 @@ const Header = () => {
             alignItems: "center",
           }}
         >
-          {/* Links de Navegação Principal */}
+          
           {nav_items.map((item) => (
             <Button
               key={item.text}
@@ -107,7 +107,7 @@ const Header = () => {
             </Button>
           ))}
 
-          {/* Seção de Perfil */}
+         
           {isAuthenticated ? (
             <Box sx={{ marginLeft: 2, display: "flex", alignItems: "center" }}>
               <Button
@@ -199,6 +199,7 @@ const Header = () => {
                 backgroundColor: COLORS_APP.brand_colors.stemine_pink,
                 color: COLORS_APP.white,
                 textTransform: "none",
+                borderRadius: "50px",
                 padding: "8px 16px",
                 fontWeight: "bold",
                 marginLeft: 1,
@@ -212,7 +213,7 @@ const Header = () => {
           )}
         </Box>
 
-        {/* Menu Hamburguer */}
+        
         <IconButton
           color="inherit"
           aria-label="open drawer"
@@ -227,7 +228,7 @@ const Header = () => {
         </IconButton>
       </Toolbar>
 
-      {/* (Menu Lateral) */}
+    
       <Drawer
         anchor="right"
         open={mobileOpen}
@@ -244,7 +245,7 @@ const Header = () => {
           </IconButton>
         </Box>
         <List>
-          {/* Navegação principal no Drawer */}
+          
           {nav_items.map((item) => (
             <ListItem
               key={item.text}
@@ -263,7 +264,7 @@ const Header = () => {
               <ListItemText primary={item.text} />
             </ListItem>
           ))}
-          {/* Itens de Autenticação/Perfil no Drawer */}
+          
           {isAuthenticated ? (
             <>
               <Divider sx={{ my: 0.5 }} />

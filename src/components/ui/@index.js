@@ -11,6 +11,8 @@ import MentorCard from "./MentorCard";
 
 import VacancyCard from "./VacancyCard";
 
+import CommunityPostCard from "./CommunityPostCard";
+
 export default {
   LoginForm,
   RegistrationForm,
@@ -24,4 +26,6 @@ export default {
   MentorCard,
 
   VacancyFormModal,
+
+  CommunityPostCard,
 };

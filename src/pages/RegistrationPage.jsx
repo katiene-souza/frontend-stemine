@@ -63,11 +63,11 @@ const RegistrationPage = () => {
           {REGISTRATION_FORMS_CONTENT.register.title}
         </Typography>
 
-        {/* Renderiza o RegistrationForm e passa a função de submit */}
+
         <RegistrationForm onSubmit={handleFormSubmit} />
       </Box>
 
-      {/* Snackbar para feedback (gerenciado pela página) */}
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

@@ -109,7 +109,7 @@ const RegistrationForm = ({ initialData = {} }) => {
     let isValidStep = true;
 
     switch (step) {
-      case 0: // Dados de Acesso
+      case 0: 
         if (
           fullValidation.errors.name ||
           fullValidation.errors.email ||
@@ -121,7 +121,7 @@ const RegistrationForm = ({ initialData = {} }) => {
           isValidStep = false;
         }
         break;
-      case 1: // Seu Perfil
+      case 1: 
         if (
           fullValidation.errors.area_of_interest ||
           fullValidation.errors.experience_level ||
@@ -132,15 +132,14 @@ const RegistrationForm = ({ initialData = {} }) => {
           isValidStep = false;
         }
         break;
-      case 2: // Desafios Atuais
+      case 2: 
         if (fullValidation.errors.current_challenges) {
           isValidStep = false;
         }
         break;
-      case 3: // Links Opcionais
-        // Validação de URLs pode ser adicionada aqui se forem obrigatórias
+      case 3: 
         break;
-      case 4: // Acessibilidade
+      case 4: 
         if (
           fullValidation.errors.has_disability ||
           (formData.has_disability &&
@@ -268,7 +267,7 @@ const RegistrationForm = ({ initialData = {} }) => {
 
   const getStepContent = (step) => {
     switch (step) {
-      case 0: // Dados de acesso
+      case 0: 
         return (
           <Box>
             <Typography
@@ -387,7 +386,7 @@ const RegistrationForm = ({ initialData = {} }) => {
               {steps[1]}
             </Typography>
 
-            {/* Campo Área de Interesse */}
+           
             <TextField
               select
               name="area_of_interest"
@@ -424,7 +423,7 @@ const RegistrationForm = ({ initialData = {} }) => {
               ])}
             </TextField>
 
-            {/* Campo Nível de Experiência na Área */}
+           
             <TextField
               select
               name="experience_level"
@@ -831,7 +830,7 @@ const RegistrationForm = ({ initialData = {} }) => {
         e.preventDefault();
       }}
     >
-      {/* Stepper de Navegação */}
+      
       <Stepper
         activeStep={activeStep}
         alternativeLabel
@@ -843,7 +842,7 @@ const RegistrationForm = ({ initialData = {} }) => {
           </Step>
         ))}
       </Stepper>
-      {/* Conteúdo do Passo Atual */}
+      
       <Box
         sx={{
           minHeight: "400px",
@@ -870,6 +869,7 @@ const RegistrationForm = ({ initialData = {} }) => {
           sx={{
             color: COLORS_APP.brand_colors.stemine_purple,
             borderColor: COLORS_APP.brand_colors.stemine_purple,
+            borderRadius: "50px",
           }}
         >
           Voltar
@@ -881,6 +881,7 @@ const RegistrationForm = ({ initialData = {} }) => {
             backgroundColor: COLORS_APP.brand_colors.stemine_purple,
             color: COLORS_APP.white,
             textTransform: "none",
+            borderRadius: "50px",
             fontWeight: "bold",
             "&:hover": {
               backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
