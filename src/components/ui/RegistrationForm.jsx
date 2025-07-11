@@ -1,6 +1,4 @@
-// src/components/RegistrationForm.jsx
-
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -17,14 +15,20 @@ import {
   Stepper,
   Step,
   StepLabel,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
-import { Link } from "react-router-dom";
-import { colors } from "../../constants/Colors";
-import { registration_forms } from "../../constants/Messages";
-import { options } from "../../utils/OptionsInformationJson";
-import { validateRegistrationForm } from "../../utils/registrationValidation";
 
-const RegistrationForm = ({ onSubmit, initialData = {} }) => {
+import { Link } from "react-router-dom";
+
+import { COLORS_APP } from "../../constants/Colors";
+import { REGISTRATION_FORMS_CONTENT } from "../../constants/Messages";
+import { OPTIONS_INFORMATION_JSON } from "../../utils/OptionsInformationJson";
+
+import { validate_registration_form } from "../../utils/registrationValidation";
+import { useAuth } from "../../contexts/AuthContext";
+
+const RegistrationForm = ({ initialData = {} }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: initialData.name || "",
@@ -62,6 +66,10 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [apiMessage, setApiMessage] = useState({ text: "", type: "" });
+  const [loading, setLoading] = useState(false);
+
+  const { register } = useAuth();
 
   const steps = [
     "Dados de Acesso",
@@ -95,13 +103,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
   };
 
   const validateStep = (step) => {
-    const fullValidation = validateRegistrationForm(formData);
+    const fullValidation = validate_registration_form(formData);
     setErrors(fullValidation.errors);
 
     let isValidStep = true;
 
     switch (step) {
-      case 0: // Dados de Acesso
+      case 0: 
         if (
           fullValidation.errors.name ||
           fullValidation.errors.email ||
@@ -113,7 +121,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           isValidStep = false;
         }
         break;
-      case 1: // Seu Perfil
+      case 1: 
         if (
           fullValidation.errors.area_of_interest ||
           fullValidation.errors.experience_level ||
@@ -124,15 +132,14 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           isValidStep = false;
         }
         break;
-      case 2: // Desafios Atuais
+      case 2: 
         if (fullValidation.errors.current_challenges) {
           isValidStep = false;
         }
         break;
-      case 3: // Links Opcionais
-        isValidStep = true; 
+      case 3: 
         break;
-      case 4: // Acessibilidade
+      case 4: 
         if (
           fullValidation.errors.has_disability ||
           (formData.has_disability &&
@@ -141,9 +148,6 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
         ) {
           isValidStep = false;
         }
-        break;
-      case 5: // Interesse em Cursos
-        isValidStep = true;
         break;
       default:
         isValidStep = true;
@@ -158,7 +162,6 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
       }
     } else {
       handleSubmit();
-      console.log("formulario completo: ", formData);
     }
   };
 
@@ -166,14 +169,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    const { errors: newErrors, isValid } = validateRegistrationForm(formData);
+    const { errors: newErrors, isValid } = validate_registration_form(formData);
     setErrors(newErrors);
+    setApiMessage({ text: "", type: "" });
 
-    if (isValid) {
-      onSubmit(formData);
-    } else {
+    if (!isValid) {
       console.error("Erros de validação no envio final:", newErrors);
       const firstErrorField = Object.keys(newErrors)[0];
       if (firstErrorField) {
@@ -216,14 +218,56 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           )
         )
           setActiveStep(4);
-        // Não há validação para o último passo por padrão
       }
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const dataToSend = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        dateOfBirth: formData.date_of_birth,
+        adaptationNeeded: formData.adaptation_needed,
+        areaOfInterest: formData.area_of_interest,
+        biography: formData.biography,
+        hasDisability: formData.has_disability,
+        disabilityType: formData.disability_type,
+        experienceLevel: formData.experience_level,
+        githubUrl: formData.github,
+        lattesUrl: formData.lattes,
+        linkedinUrl: formData.linkedin,
+        portfolioUrl: formData.portfolio,
+        purposeOfMentoring: formData.purpose_of_mentoring,
+        currentChallenges: formData.current_challenges,
+        timeAvailability: formData.time_availability,
+        profilePhotoUrl: null,
+        curriculumFileUrl: null,
+      };
+
+      await register(dataToSend);
+      setApiMessage({
+        text: "Cadastro realizado com sucesso! Você será redirecionado para o login.",
+        type: "success",
+      });
+    } catch (err) {
+      console.error(
+        "Erro no cadastro:",
+        err.response ? err.response.data : err.message
+      );
+      const errorMessage =
+        err.response?.data?.message ||
+        REGISTRATION_FORMS_CONTENT.register.api_error;
+      setApiMessage({ text: errorMessage, type: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   const getStepContent = (step) => {
     switch (step) {
-      case 0: // Dados de acesso
+      case 0: 
         return (
           <Box>
             <Typography
@@ -231,8 +275,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               gutterBottom
               sx={{
                 fontWeight: "bold",
-                color: colors.text.primary,
-                borderBottom: `2px solid ${colors.brand_colors.stemine_pink}`,
+                color: COLORS_APP.text.primary,
+                borderBottom: `2px solid ${COLORS_APP.brand_colors.stemine_pink}`,
                 pb: 1,
                 mb: 3,
               }}
@@ -241,8 +285,10 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             </Typography>
             <TextField
               name="name"
-              label={registration_forms.register.name}
-              placeholder={registration_forms.register.name_placeholder}
+              label={REGISTRATION_FORMS_CONTENT.register.full_name_label}
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.full_name_placeholder
+              }
               variant="outlined"
               fullWidth
               value={formData.name}
@@ -253,8 +299,10 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="email"
-              label={registration_forms.register.email}
-              placeholder={registration_forms.register.email_placeholder}
+              label={REGISTRATION_FORMS_CONTENT.register.email_label}
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.email_placeholder
+              }
               variant="outlined"
               fullWidth
               value={formData.email}
@@ -266,8 +314,10 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="password"
-              label={registration_forms.register.password}
-              placeholder={registration_forms.register.password_placeholder}
+              label={REGISTRATION_FORMS_CONTENT.register.password_label}
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.password_placeholder
+              }
               variant="outlined"
               fullWidth
               value={formData.password}
@@ -279,9 +329,9 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="confirm_password"
-              label={registration_forms.register.confirm_password}
+              label={REGISTRATION_FORMS_CONTENT.register.confirm_password_label}
               placeholder={
-                registration_forms.register.confirm_password_placeholder
+                REGISTRATION_FORMS_CONTENT.register.confirm_password_placeholder
               }
               variant="outlined"
               fullWidth
@@ -294,7 +344,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="date_of_birth"
-              label={registration_forms.register.date_of_birth}
+              label={REGISTRATION_FORMS_CONTENT.register.date_of_birth_label}
               variant="outlined"
               fullWidth
               value={formData.date_of_birth}
@@ -306,14 +356,14 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              name="profile_photo" // <-- ATUALIZADO: Nome da prop para o File Object
-              label={registration_forms.register.profile_photo}
-              type="file" // <-- ATUALIZADO: Tipo de input para arquivo
+              name="profile_photo"
+              label={REGISTRATION_FORMS_CONTENT.register.profile_photo_label}
+              type="file"
               variant="outlined"
               fullWidth
               InputLabelProps={{ shrink: true }}
               onChange={handleChange}
-              error={!!errors.profile_photo} // <-- ATUALIZADO: Erro para profile_photo
+              error={!!errors.profile_photo}
               helperText={errors.profile_photo}
               sx={{ mb: 3 }}
             />
@@ -327,8 +377,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               gutterBottom
               sx={{
                 fontWeight: "bold",
-                color: colors.text.primary,
-                borderBottom: `2px solid ${colors.brand_colors.stemine_pink}`,
+                color: COLORS_APP.text.primary,
+                borderBottom: `2px solid ${COLORS_APP.brand_colors.stemine_pink}`,
                 pb: 1,
                 mb: 3,
               }}
@@ -336,11 +386,11 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               {steps[1]}
             </Typography>
 
-            {/* Campo Área de Interesse */}
+           
             <TextField
               select
               name="area_of_interest"
-              label={registration_forms.register.area_of_interest}
+              label={REGISTRATION_FORMS_CONTENT.register.area_of_interest_label}
               variant="outlined"
               fullWidth
               value={formData.area_of_interest}
@@ -349,8 +399,10 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               helperText={errors.area_of_interest}
               sx={{ mb: 3 }}
             >
-              <MenuItem value="">Selecione sua Área de Interesse</MenuItem>{" "}
-              {options.areaOfInterest.map((group) => [
+              <MenuItem value="">
+                {REGISTRATION_FORMS_CONTENT.register.option_area_interest_label}
+              </MenuItem>{" "}
+              {OPTIONS_INFORMATION_JSON.areaOfInterest.map((group) => [
                 <MenuItem
                   key={group.group}
                   value=""
@@ -358,12 +410,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                   sx={{
                     fontWeight: "bold",
                     opacity: 1,
-                    color: colors.text.primary,
+                    color: COLORS_APP.text.primary,
                   }}
                 >
                   {group.group}
                 </MenuItem>,
-                group.options.map((option) => (
+                group.OPTIONS_INFORMATION_JSON.map((option) => (
                   <MenuItem key={option.id} value={option.label} sx={{ pl: 4 }}>
                     {option.label}
                   </MenuItem>
@@ -371,11 +423,11 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               ])}
             </TextField>
 
-            {/* Campo Nível de Experiência na Área */}
+           
             <TextField
               select
               name="experience_level"
-              label={registration_forms.register.experience_level}
+              label={REGISTRATION_FORMS_CONTENT.register.experience_level_label}
               variant="outlined"
               fullWidth
               value={formData.experience_level}
@@ -384,8 +436,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               helperText={errors.experience_level}
               sx={{ mb: 3 }}
             >
-              <MenuItem value="">Selecione o Nível de Experiência</MenuItem>
-              {options.experienceLevel.map((option) => (
+              <MenuItem value="">
+                {
+                  REGISTRATION_FORMS_CONTENT.register
+                    .option_experience_level_label
+                }
+              </MenuItem>
+              {OPTIONS_INFORMATION_JSON.experienceLevel.map((option) => (
                 <MenuItem key={option.id} value={option.label}>
                   {option.label}
                 </MenuItem>
@@ -395,9 +452,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             {/* Ojbetivo com a mentoria */}
             <TextField
               name="purpose_of_mentoring"
-              label={registration_forms.register.Purpose_of_mentoring}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.mentoring_objectives_label
+              }
               placeholder={
-                registration_forms.register.Purpose_of_mentoring_placeholder
+                REGISTRATION_FORMS_CONTENT.register
+                  .mentoring_objectives_placeholder
               }
               variant="outlined"
               fullWidth
@@ -410,11 +470,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               sx={{ mb: 3 }}
             />
 
-            {/* Campo Disponibilidade de Horário - AGORA É MULTI-SELECT */}
+            {/* Campo Disponibilidade de Horário */}
             <TextField
               select
               name="time_availability"
-              label={registration_forms.register.time_availability}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.time_availability_label
+              }
               variant="outlined"
               fullWidth
               value={formData.time_availability}
@@ -424,27 +486,29 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               sx={{ mb: 3 }}
               SelectProps={{
                 multiple: true,
-                renderValue: (
-                  selected 
-                ) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                renderValue: (selected) => (
+                  <Box sx={{ display: "flex", flexWrap: 0.5 }}>
                     {selected.map((valueId) => {
-                      const day = options.timeAvailability.find((dg) =>
-                        dg.periods.some((p) => p.id === valueId)
-                      )?.day;
-                      const periodLabel = options.timeAvailability
-                        .flatMap((dg) => dg.periods)
-                        .find((p) => p.id === valueId)?.label;
+                      const day =
+                        OPTIONS_INFORMATION_JSON.timeAvailability.find((dg) =>
+                          dg.periods.some((p) => p.id === valueId)
+                        )?.day;
+                      const periodLabel =
+                        OPTIONS_INFORMATION_JSON.timeAvailability
+                          .flatMap((dg) => dg.periods)
+                          .find((p) => p.id === valueId)?.label;
                       return (
                         <Typography
                           key={valueId}
                           variant="body2"
                           sx={{
                             backgroundColor:
-                              colors.brand_colors.stemine_purple_light,
-                            color: colors.brand_colors.stemine_purple,
+                              COLORS_APP.brand_colors.stemine_purple_light,
+                            color: COLORS_APP.brand_colors.stemine_purple,
                             borderRadius: "4px",
                             padding: "2px 8px",
+                            fontWeight: "bold",
+                            fontSize: "0.8rem",
                             whiteSpace: "nowrap",
                           }}
                         >
@@ -458,7 +522,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                 ),
               }}
             >
-              {options.timeAvailability.map((dayGroup) => [
+              {OPTIONS_INFORMATION_JSON.timeAvailability.map((dayGroup) => [
                 <MenuItem
                   key={dayGroup.day}
                   value=""
@@ -466,28 +530,26 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                   sx={{
                     fontWeight: "bold",
                     opacity: 1,
-                    color: colors.text.primary,
+                    color: COLORS_APP.text.primary,
                   }}
                 >
                   {dayGroup.day}
                 </MenuItem>,
                 dayGroup.periods.map((period) => (
-                  <MenuItem
-                    key={period.id}
-                    value={period.id}
-                    sx={{ pl: 4 }}
-                  >
+                  <MenuItem key={period.id} value={period.id} sx={{ pl: 4 }}>
                     {period.label}
                   </MenuItem>
                 )),
               ])}
             </TextField>
 
-              {/* Biografia */}
+            {/* Biografia */}
             <TextField
               name="biography"
-              label={registration_forms.register.biografy}
-              placeholder={registration_forms.register.biography_placeholder}
+              label={REGISTRATION_FORMS_CONTENT.register.biography_label}
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.biography_placeholder
+              }
               variant="outlined"
               fullWidth
               multiline
@@ -508,8 +570,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               gutterBottom
               sx={{
                 fontWeight: "bold",
-                color: colors.text.primary,
-                borderBottom: `2px solid ${colors.brand_colors.stemine_pink}`,
+                color: COLORS_APP.text.primary,
+                borderBottom: `2px solid ${COLORS_APP.brand_colors.stemine_pink}`,
                 pb: 1,
                 mb: 3,
               }}
@@ -522,12 +584,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             >
               <FormLabel
                 component="legend"
-                sx={{ color: colors.text.primary, mb: 1 }}
+                sx={{ color: COLORS_APP.text.primary, mb: 1 }}
               >
-                {registration_forms.register.current_challenges}
+                {REGISTRATION_FORMS_CONTENT.register.current_challenges_label}
               </FormLabel>
               <FormGroup>
-                {options.challengeOptions.map((challenge) => (
+                {OPTIONS_INFORMATION_JSON.challengeOptions.map((challenge) => (
                   <FormControlLabel
                     key={challenge.id}
                     control={
@@ -558,8 +620,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               gutterBottom
               sx={{
                 fontWeight: "bold",
-                color: colors.text.primary,
-                borderBottom: `2px solid ${colors.brand_colors.stemine_pink}`,
+                color: COLORS_APP.text.primary,
+                borderBottom: `2px solid ${COLORS_APP.brand_colors.stemine_pink}`,
                 pb: 1,
                 mb: 3,
               }}
@@ -568,9 +630,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             </Typography>
             <TextField
               name="linkedin"
-              label={registration_forms.register.Links.linkedin}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .linkedin_label
+              }
               placeholder={
-                registration_forms.register.Links.linkedin_placeholder
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .linkedin_placeholder
               }
               variant="outlined"
               fullWidth
@@ -582,9 +648,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="portfolio"
-              label={registration_forms.register.Links.portfolio}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .portfolio_label
+              }
               placeholder={
-                registration_forms.register.Links.portfolio_placeholder
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .portfolio_placeholder
               }
               variant="outlined"
               fullWidth
@@ -596,8 +666,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="github"
-              label={registration_forms.register.Links.git_hub}
-              placeholder={registration_forms.register.Links.github_placeholder}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links.github_label
+              }
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .github_placeholder
+              }
               variant="outlined"
               fullWidth
               value={formData.github}
@@ -608,8 +683,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="lattes"
-              label={registration_forms.register.Links.lattes}
-              placeholder={registration_forms.register.Links.lattes_placeholder}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links.lattes_label
+              }
+              placeholder={
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .lattes_placeholder
+              }
               variant="outlined"
               fullWidth
               value={formData.lattes}
@@ -620,7 +700,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="curriculum_file"
-              label={registration_forms.register.curriculum}
+              label={REGISTRATION_FORMS_CONTENT.register.resume_upload_label}
               type="file"
               variant="outlined"
               fullWidth
@@ -640,8 +720,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               gutterBottom
               sx={{
                 fontWeight: "bold",
-                color: colors.text.primary,
-                borderBottom: `2px solid ${colors.brand_colors.stemine_pink}`,
+                color: COLORS_APP.text.primary,
+                borderBottom: `2px solid ${COLORS_APP.brand_colors.stemine_pink}`,
                 pb: 1,
                 mb: 3,
               }}
@@ -651,9 +731,9 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             <FormControl component="fieldset" error={!!errors.has_disability}>
               <FormLabel
                 component="legend"
-                sx={{ color: colors.text.primary, mb: 1 }}
+                sx={{ color: COLORS_APP.text.primary, mb: 1 }}
               >
-                {registration_forms.register.disability.title}
+                {REGISTRATION_FORMS_CONTENT.register.disability_section.title}
               </FormLabel>
               <RadioGroup
                 row
@@ -664,12 +744,18 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                 <FormControlLabel
                   value="true"
                   control={<Radio />}
-                  label={registration_forms.register.disability.text_button_yes}
+                  label={
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
+                      .yes_button
+                  }
                 />
                 <FormControlLabel
                   value="false"
                   control={<Radio />}
-                  label={registration_forms.register.disability.text_button_no}
+                  label={
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
+                      .no_button
+                  }
                 />
               </RadioGroup>
               <Typography variant="caption" color="error">
@@ -677,9 +763,16 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: colors.text.secondary, mt: 1, display: "block" }}
+                sx={{
+                  color: COLORS_APP.text.secondary,
+                  mt: 1,
+                  display: "block",
+                }}
               >
-                {registration_forms.register.disability.explanation}
+                {
+                  REGISTRATION_FORMS_CONTENT.register.disability_section
+                    .explanation
+                }
               </Typography>
             </FormControl>
 
@@ -687,10 +780,13 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               <Box sx={{ mt: 3 }}>
                 <TextField
                   name="disability_type"
-                  label={registration_forms.register.disability.what_disability}
+                  label={
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
+                      .type_label
+                  }
                   placeholder={
-                    registration_forms.register.disability
-                      .what_disability_placeholder
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
+                      .type_placeholder
                   }
                   variant="outlined"
                   fullWidth
@@ -702,9 +798,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                 />
                 <TextField
                   name="adaptation_needed"
-                  label={registration_forms.register.disability.adaptation}
+                  label={
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
+                      .adaptation_label
+                  }
                   placeholder={
-                    registration_forms.register.disability
+                    REGISTRATION_FORMS_CONTENT.register.disability_section
                       .adaptation_placeholder
                   }
                   variant="outlined"
@@ -721,7 +820,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           </Box>
         );
       default:
-        return "Passo desconhecido";
+        return REGISTRATION_FORMS_CONTENT.register.step_unknown;
     }
   };
 
@@ -731,7 +830,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
         e.preventDefault();
       }}
     >
-      {/* Stepper de Navegação */}
+      
       <Stepper
         activeStep={activeStep}
         alternativeLabel
@@ -743,8 +842,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           </Step>
         ))}
       </Stepper>
-
-      {/* Conteúdo do Passo Atual */}
+      
       <Box
         sx={{
           minHeight: "400px",
@@ -756,7 +854,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
       >
         {getStepContent(activeStep)}
       </Box>
-
+      {/* Mensagem da API */}
+      {apiMessage.text && (
+        <Alert severity={apiMessage.type} sx={{ mb: 3 }}>
+          {apiMessage.text}
+        </Alert>
+      )}
       {/* Botões de Navegação do Stepper */}
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Button
@@ -764,8 +867,9 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           onClick={handleBack}
           variant="outlined"
           sx={{
-            color: colors.brand_colors.stemine_purple,
-            borderColor: colors.brand_colors.stemine_purple,
+            color: COLORS_APP.brand_colors.stemine_purple,
+            borderColor: COLORS_APP.brand_colors.stemine_purple,
+            borderRadius: "50px",
           }}
         >
           Voltar
@@ -774,33 +878,37 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           variant="contained"
           onClick={handleNext}
           sx={{
-            backgroundColor: colors.brand_colors.stemine_purple,
-            color: colors.white,
+            backgroundColor: COLORS_APP.brand_colors.stemine_purple,
+            color: COLORS_APP.white,
             textTransform: "none",
+            borderRadius: "50px",
             fontWeight: "bold",
             "&:hover": {
-              backgroundColor: colors.brand_colors.stemine_purple_dark,
+              backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
             },
           }}
         >
-          {activeStep === steps.length - 1
-            ? registration_forms.register.to_register
-            : "Próximo"}
+          {loading ? ( // Exibir CircularProgress se estiver carregando
+            <CircularProgress size={24} color="inherit" />
+          ) : activeStep === steps.length - 1 ? (
+            REGISTRATION_FORMS_CONTENT.register.register_button
+          ) : (
+            REGISTRATION_FORMS_CONTENT.register.next_step_button
+          )}
         </Button>
       </Box>
-
       {/* Link para Login */}
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        {registration_forms.register.log_in}{" "}
+        {REGISTRATION_FORMS_CONTENT.register.has_account_text}
         <Link
           to="/login"
           style={{
             textDecoration: "none",
-            color: colors.brand_colors.stemine_pink,
+            color: COLORS_APP.brand_colors.stemine_pink,
             fontWeight: "bold",
           }}
         >
-          {registration_forms.register.link_log_in}
+          {REGISTRATION_FORMS_CONTENT.register.has_account_link}
         </Link>
       </Typography>
     </form>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"; // Importe useEffect para lógica de autenticação inicial
+import { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -6,152 +6,206 @@ import {
   TextField,
   MenuItem,
   Button,
-  Snackbar, 
-  Alert, 
+  Snackbar,
+  Alert,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
-import { colors } from "../constants/Colors";
-import { register_course as CourseMessages, error_messages } from "../constants/Messages"; 
-import { options } from "../utils/OptionsInformationJson";
-import { useAuth } from "../contexts/AuthContext";
-import CourseCard from "../components/ui/CourseCard"; 
-import CourseFormModal from "../components/CourseFormModal";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
+import CourseService from "../services/courseService";
 
-// Dados de exemplo INICIAIS para os cursos (mock)
-const initialExampleCourses = [
-  {
-    id: 1,
-    imageUrl:
-      "https://storage.googleapis.com/star-lab/blog/OGs/react.png",
-    level: "Intermediário",
-    categories: ["Tecnologia", "Matemática"],
-    title: "Desenvolvimento Front-end com React",
-    description:
-      "Acesse os melhores cursos com certificado para se especializar e se destacar nas áreas STEM. Este curso abrange desde os fundamentos até tópicos avançados de React.",
-    durationValue: "8", 
-    durationUnit: "semanas", 
-    companyLogoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/1024px-Microsoft_logo.svg.png",
-  },
-  {
-    id: 2,
-    imageUrl:
-      "https://via.placeholder.com/300x160/F0F0F0/000000?text=Curso+Liderança+2",
-    level: "Básico",
-    categories: ["Liderança", "Carreira"], 
-    title: "Liderança Feminina",
-    description:
-      "Conectamos você com mentoras profissionais e experientes que fornecem orientação personalizada para acelerar sua carreira em liderança.",
-    durationValue: "8",
-    durationUnit: "semanas",
-    companyLogoUrl: "https://via.placeholder.com/80x30?text=LOGO+EMPRESA+B",
-  },
-  {
-    id: 3,
-    imageUrl:
-      "https://via.placeholder.com/300x160/F0F0F0/000000?text=Curso+Engenharia+3",
-    level: "Avançado",
-    categories: ["Engenharia", "Ciência"],
-    title: "Engenharia de Software", 
-    description:
-      "Acesse os melhores cursos com certificado para se especializar e se destacar nas áreas STEM. Este curso aprofunda em tópicos de engenharia de software.",
-    durationValue: "8",
-    durationUnit: "semanas",
-    companyLogoUrl: "https://via.placeholder.com/80x30?text=LOGO+EMPRESA+C",
-  },
-  {
-    id: 4,
-    imageUrl:
-      "https://via.placeholder.com/300x160/F0F0F0/000000?text=Curso+Dados+4",
-    level: "Intermediário",
-    categories: ["Dados", "Matemática"],
-    title: "Introdução à Ciência de Dados",
-    description:
-      "Explore o mundo dos dados, desde a coleta e limpeza até a análise e visualização de dados complexos.",
-    durationValue: "10",
-    durationUnit: "semanas",
-    companyLogoUrl: "https://via.placeholder.com/80x30?text=LOGO+EMPRESA+D",
-  },
-];
+import {
+  COURSE_PAGE_CONTENT,
+  FEEDBACK_MESSAGES,
+  VALIDATION_ERROR_MESSAGES,
+} from "../constants/Messages";
+import { COLORS_APP } from "../constants/Colors";
+import { OPTIONS_INFORMATION_JSON } from "../utils/OptionsInformationJson";
+
+import CourseCard from "../components/ui/CourseCard";
+import ConfirmationDialog from "../components/ui/ConfirmationDialog";
+import CourseFormModal from "../components/ui/CourseFormModal";
 
 const CoursesPage = () => {
-  const { user, isAuthenticated } = useAuth(); // Pega o user e isAuthenticated do contexto
-  const navigate = useNavigate(); // Hook para redirecionamento
+  const { isAuthenticated, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
-  // Calcule isAdminUser aqui, como você já faz
-  const isAdminUser = isAuthenticated && user?.role === 'admin';
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      const timer = setTimeout(() => {
-        navigate('/login'); 
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, navigate]);
-
-
-  const [courses, setCourses] = useState(initialExampleCourses);
+  const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [levelFilter, setLevelFilter] = useState(options.level[0].label);
-  const [categoryFilter, setCategoryFilter] = useState(
-    options.category[0].label
-  );
+  const [levelFilter, setLevelFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourseData, setEditingCourseData] = useState(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
-  // Filtra os cursos (lógica existente)
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesLevel = levelFilter === options.level[0].label || course.level === levelFilter;
-    const matchesCategory = categoryFilter === options.category[0].label || 
-                           course.categories.includes(categoryFilter); 
-    return matchesSearch && matchesLevel && matchesCategory;
-  });
+  const [loading, setLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState({ text: "", type: "" });
 
-  // --- Funções de Feedback e Ação ---
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async (filters = {}) => {
+    setLoading(true);
+    setApiMessage({ text: "", type: "" });
+    try {
+      const response = await CourseService.searchCourses(filters);
+      setCourses(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar cursos:", error);
+      setApiMessage({
+        text: "Erro ao carregar cursos. Tente novamente.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleLevelFilterChange = (e) => {
+    setLevelFilter(e.target.value);
+    fetchCourses({
+      title: searchTerm,
+      level: e.target.value,
+      categories: categoryFilter,
+    });
+  };
+
+  const handleCategoryFilterChange = (e) => {
+    setCategoryFilter(e.target.value);
+    fetchCourses({
+      title: searchTerm,
+      level: levelFilter,
+      categories: e.target.value,
+    });
+  };
+
+  const handleApplyFilter = () => {
+    fetchCourses({
+      title: searchTerm,
+      level: levelFilter,
+      categories: categoryFilter,
+    });
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setLevelFilter("");
+    setCategoryFilter("");
+    fetchCourses({});
+  };
+
   const showSnackbar = (message, severity) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') { return; }
+    if (reason === "clickaway") {
+      return;
+    }
     setSnackbarOpen(false);
   };
-  const handleSubscribe = (courseTitle) => {
-    showSnackbar(`Inscrito no curso: ${courseTitle}`, 'info');
+
+  const handleSubscribe = (courseUrl, courseTitle) => {
+    if (!isAuthenticated) {
+      showSnackbar(
+        VALIDATION_ERROR_MESSAGES.authentication.login_required,
+        "info"
+      );
+      navigate("/login");
+    } else {
+      if (courseUrl) {
+        window.open(courseUrl, "_blank");
+        showSnackbar(`Redirecionando para o curso: ${courseTitle}`, "info");
+      } else {
+        showSnackbar(
+          `Link do curso '${courseTitle}' não disponível.`,
+          "warning"
+        );
+      }
+    }
   };
 
-  // Funções de Admin (protegidas)
   const handleEditCourse = (courseId) => {
-    if (!isAdminUser) { showSnackbar(error_messages.auth.permission_denied, 'error'); return; }
+    if (!isAdmin()) {
+      showSnackbar(
+        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+        "error"
+      );
+      return;
+    }
     const courseToEdit = courses.find((c) => c.id === courseId);
     setEditingCourseData(courseToEdit);
     setIsModalOpen(true);
   };
 
-  const handleDeleteCourse = (courseId, courseTitle) => {
-    if (!isAdminUser) { showSnackbar(error_messages.auth.permission_denied, 'error'); return; }
-    if (window.confirm(`Tem certeza que deseja excluir o curso "${courseTitle}"?`)) {
-      setCourses((prevCourses) => prevCourses.filter((course) => course.id !== courseId));
-      showSnackbar(`Curso "${courseTitle}" excluído com sucesso!`, 'success');
+  const handleDeleteCourseTrigger = (courseId, courseTitle) => {
+    if (!isAdmin()) {
+      showSnackbar(
+        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+        "error"
+      );
+      return;
     }
+    setCourseToDelete({ id: courseId, title: courseTitle });
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDeleteCourse = async () => {
+    if (courseToDelete) {
+      setLoading(true);
+      setApiMessage({ text: "", type: "" });
+      try {
+        await CourseService.deleteCourse(courseToDelete.id);
+        showSnackbar(
+          `Curso "${courseToDelete.title}" excluído com sucesso!`,
+          "success"
+        );
+        fetchCourses();
+        setCourseToDelete(null);
+      } catch (error) {
+        console.error("Erro ao excluir curso:", error);
+        const errorMessage =
+          error.response?.data?.message ||
+          FEEDBACK_MESSAGES.error_course_deletion;
+        setApiMessage({ text: errorMessage, type: "error" });
+      } finally {
+        setLoading(false);
+      }
+    }
+    setConfirmDialogOpen(false);
+  };
+
+  const handleCancelDeleteCourse = () => {
+    setCourseToDelete(null);
+    setConfirmDialogOpen(false);
   };
 
   const handleOpenModal = () => {
-    if (!isAdminUser) { showSnackbar(error_messages.auth.permission_denied, 'error'); return; }
+    if (!isAdmin()) {
+      showSnackbar(
+        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+        "error"
+      );
+      return;
+    }
     setEditingCourseData(null);
     setIsModalOpen(true);
   };
@@ -159,83 +213,119 @@ const CoursesPage = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCourseData(null);
+    setApiMessage({ text: "", type: "" });
   };
 
-  const handleSubmitCourse = (formData) => {
-    if (!isAdminUser) { showSnackbar(error_messages.auth.permission_denied, 'error'); return; }
-    if (editingCourseData) {
-      setCourses((prevCourses) => prevCourses.map((c) => (c.id === formData.id ? formData : c)));
-      showSnackbar("Curso atualizado com sucesso!", "success");
-    } else {
-      const newId = Math.max(...courses.map((c) => c.id)) + 1;
-      setCourses((prevCourses) => [...prevCourses, { ...formData, id: newId }]);
-      showSnackbar("Curso cadastrado com sucesso!", "success");
+  const handleSubmitCourse = async (formData) => {
+    if (!isAdmin()) {
+      showSnackbar(
+        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+        "error"
+      );
+      return;
     }
-    handleCloseModal();
+    setLoading(true);
+    setApiMessage({ text: "", type: "" });
+    try {
+      if (editingCourseData) {
+        await CourseService.updateCourse(formData.id, formData);
+        showSnackbar(FEEDBACK_MESSAGES.sucessful_course_edition, "success");
+      } else {
+        await CourseService.createCourse(formData);
+        showSnackbar(
+          FEEDBACK_MESSAGES.sucessful_course_registration,
+          "success"
+        );
+      }
+      fetchCourses();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Erro ao salvar curso:", error);
+      const errorMessage =
+        error.response?.data?.message || FEEDBACK_MESSAGES.error_course_save;
+      setApiMessage({ text: errorMessage, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
-
-
-  // Se o usuário não está autenticado, renderize algo temporário enquanto redireciona.
-  // Ou melhor, apenas não renderize nada (null) e o useEffect cuidará do redirecionamento.
-  if (!isAuthenticated && !user) { 
-    return (
-      <Container maxWidth="lg" sx={{ py: 6, textAlign: 'center' }}>
-        <Typography variant="h6" color="text.secondary">
-          Redirecionando para a página de login...
-        </Typography>
-        <Snackbar
-          open={true}
-          autoHideDuration={2000}
-          message="Você precisa estar logado para acessar esta página."
-          severity="info"
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-             <Alert severity="info" sx={{ width: '100%' }}>
-                Você precisa estar logado para acessar esta página.
-             </Alert>
-        </Snackbar>
-      </Container>
-    );
-  }
-
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 }, px: { xs: 2, sm: 4, md: 8 } }}>
-      {/* Cabeçalho da Página de Cursos */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 4, md: 6 } }}>
-        <Typography variant="h4" component="h1" sx={{ color: colors.text.primary, fontWeight: 'bold' }}>
-          {CourseMessages.title}
+    <Container
+      maxWidth="lg"
+      sx={{ py: { xs: 6, md: 8 }, px: { xs: 2, sm: 4, md: 8 } }}
+    >
+     
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: { xs: 4, md: 6 },
+        }}
+      >
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ color: COLORS_APP.text.primary, fontWeight: "bold" }}
+        >
+          {COURSE_PAGE_CONTENT.title}
         </Typography>
-        {isAdminUser && (
+        {isAdmin() && (
           <Button
             variant="contained"
             onClick={handleOpenModal}
+            disabled={loading}
             sx={{
-              backgroundColor: colors.brand_colors.stemine_purple,
-              color: colors.white,
-              textTransform: 'none',
-              borderRadius: '50px',
+              backgroundColor: COLORS_APP.brand_colors.stemine_purple,
+              color: COLORS_APP.white,
+              textTransform: "none",
+              borderRadius: "50px",
               padding: { xs: "8px 16px", md: "10px 20px" },
               fontSize: { xs: "0.85rem", md: "0.95rem" },
               fontWeight: "bold",
               "&:hover": {
-                backgroundColor: colors.brand_colors.stemine_purple_dark,
+                backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
               },
             }}
           >
-            {CourseMessages.is_adm_text_button}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              COURSE_PAGE_CONTENT.admin_add_course_button
+            )}
           </Button>
         )}
       </Box>
 
-      {/* Seção de Busca e Filtros - VISÍVEL PARA TODOS */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 3 }, mb: { xs: 4, md: 5 } }}>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 2, sm: 3 },
+          mb: { xs: 4, md: 5 },
+        }}
+      >
         <TextField
-          label={CourseMessages.search}
+          label={COURSE_PAGE_CONTENT.search_placeholder}
           variant="outlined"
-          fullWidth={!['sm', 'md', 'lg'].includes('sm')}
+          fullWidth
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleApplyFilter();
+            }
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleApplyFilter}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           sx={{
             flex: { sm: 1 },
             minWidth: { sm: "200px" },
@@ -247,13 +337,14 @@ const CoursesPage = () => {
           label="Nível"
           variant="outlined"
           value={levelFilter}
-          onChange={(e) => setLevelFilter(e.target.value)}
+          onChange={handleLevelFilterChange}
           sx={{
             width: { xs: "100%", sm: "auto" },
             minWidth: { sm: "150px" },
           }}
         >
-          {options.level.map((option) => (
+          <MenuItem value="">Todos</MenuItem>{" "}
+          {OPTIONS_INFORMATION_JSON.level.map((option) => (
             <MenuItem key={option.id} value={option.label}>
               {option.label}
             </MenuItem>
@@ -265,94 +356,142 @@ const CoursesPage = () => {
           label="Categoria"
           variant="outlined"
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={handleCategoryFilterChange}
           sx={{
             width: { xs: "100%", sm: "auto" },
             minWidth: { sm: "180px" },
           }}
         >
-          {options.category.map((option) => (
+          <MenuItem value="">Todas</MenuItem>{" "}
+          {OPTIONS_INFORMATION_JSON.categories.map((option) => (
             <MenuItem key={option.id} value={option.label}>
               {option.label}
             </MenuItem>
           ))}
         </TextField>
+        <Button
+          variant="outlined"
+          onClick={handleClearFilters}
+          sx={{
+            width: { xs: "100%", sm: "auto" },
+            minWidth: { sm: "120px" },
+            color: COLORS_APP.brand_colors.stemine_purple,
+            borderColor: COLORS_APP.brand_colors.stemine_purple,
+            borderRadius: "50px",
+          }}
+        >
+          Limpar
+        </Button>
       </Box>
 
-      {/* Contagem de Cursos Encontrados */}
-      <Typography variant="body1" sx={{ color: colors.text.secondary, mb: { xs: 3, md: 4 } }}>
-        {filteredCourses.length} {CourseMessages.courses_found}
+
+      <Typography
+        variant="body1"
+        sx={{ color: COLORS_APP.text.secondary, mb: { xs: 3, md: 4 } }}
+      >
+        {courses.length} {COURSE_PAGE_CONTENT.courses_found_message}
       </Typography>
 
-      {/* Listagem de CourseCards (Flexbox) */}
+      {apiMessage.text && (
+        <Alert severity={apiMessage.type} sx={{ mb: 3 }}>
+          {apiMessage.text}
+        </Alert>
+      )}
+
+      {loading && !apiMessage.text && (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!loading && !apiMessage.text && courses.length === 0 && (
+        <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
+          <Typography variant="h6" color="text.secondary">
+            {COURSE_PAGE_CONTENT.no_courses_found}
+          </Typography>
+        </Box>
+      )}
+
+
+
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          flexWrap: 'wrap',
-          justifyContent: 'flex-start',
-          alignItems: 'stretch',
-          gap: { xs: '24px', sm: '32px', md: '16px' }, 
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          flexWrap: "wrap",
+          justifyContent: "flex-start",
+          alignItems: "stretch",
+          gap: { xs: "24px", sm: "32px", md: "24px" },
         }}
       >
-        {filteredCourses.map((course) => (
+        {courses.map((course) => (
           <Box
-            key={course.id}
             sx={{
               flex: {
-                xs: '1 1 100%',
-                sm: '1 1 calc(50% - 16px)',
-                md: '1 1 calc(33.33% - 10.67px)',
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 16px)",
+                md: "1 1 calc(50% - 16px)",
               },
               maxWidth: {
-                xs: '100%',
-                sm: 'calc(50% - 16px)',
-                md: 'calc(33.33% - 10.67px)',
+                xs: "100%",
+                sm: "calc(50% - 16px)",
+                md: "calc(50% - 16px)",
               },
-              boxSizing: 'border-box',
+              boxSizing: "border-box",
             }}
+            key={course.id}
           >
             <CourseCard
-              imageUrl={course.imageUrl}
-              level={course.level}
-              categories={course.categories}
-              title={course.title}
-              description={course.description}
-              duration={course.durationValue + ' ' + course.durationUnit}
-              companyLogoUrl={course.companyLogoUrl}
-              onSubscribeClick={() => handleSubscribe(course.title)}
-              
-              isAdm={isAdminUser}
+              course={course}
+              isAdm={isAdmin()}
+              onSubscribeClick={() =>
+                handleSubscribe(course.courseUrl, course.title)
+              }
               onEditClick={() => handleEditCourse(course.id)}
-              onDeleteClick={() => handleDeleteCourse(course.id, course.title)}
+              onDeleteClick={() =>
+                handleDeleteCourseTrigger(course.id, course.title)
+              }
             />
           </Box>
         ))}
-        {filteredCourses.length === 0 && (
-          <Box sx={{ width: '100%', textAlign: 'center', mt: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              Nenhum curso encontrado com os filtros selecionados.
-            </Typography>
-          </Box>
-        )}
       </Box>
 
-      {/* Renderiza a CourseFormModal (ela só estará aberta se isModalOpen for true) */}
+
       <CourseFormModal
         open={isModalOpen}
         onClose={handleCloseModal}
-        onSubmit={handleSubmitCourse}
+        onSave={handleSubmitCourse}
         initialData={editingCourseData}
       />
 
-      {/* Snackbar para feedback de sucesso/erro */}
+
+      <ConfirmationDialog
+        open={confirmDialogOpen}
+        onClose={handleCancelDeleteCourse}
+        onConfirm={handleConfirmDeleteCourse}
+        title={`Excluir "${courseToDelete?.title || "Curso"}"?`}
+        message={
+          `Tem certeza que deseja excluir o curso "${
+            courseToDelete?.title || "este curso"
+          }"? ` +
+          COURSE_PAGE_CONTENT.course_exclusion_modal.confirmation_message
+        }
+        confirmText="Excluir"
+        confirmColor="error"
+      />
+
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

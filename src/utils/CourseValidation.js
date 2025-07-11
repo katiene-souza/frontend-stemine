@@ -1,23 +1,26 @@
-import { error_messages } from "../constants/Messages";
+import { VALIDATION_ERROR_MESSAGES } from "../constants/Messages";
 
-export const validateCourseForm = (formData) => {
+const MAX_DESCRIPTION_LENGTH = 97;
+
+export const validate_course_form = (formData) => {
   let newErrors = {};
   let isValid = true;
 
   if (!formData.title.trim()) {
-    newErrors.title = error_messages.course_form.title_required;
+    newErrors.title = VALIDATION_ERROR_MESSAGES.course_form.title_required;
     isValid = false;
   } else if (formData.title.trim().length < 5) {
-    newErrors.title = error_messages.course_form.title_min_length;
+    newErrors.title = VALIDATION_ERROR_MESSAGES.course_form.title_min_length;
     isValid = false;
   }
 
-  const MAX_DESCRIPTION_LENGTH = 97;
   if (!formData.description.trim()) {
-    newErrors.description = error_messages.course_form.description_required;
+    newErrors.description =
+      VALIDATION_ERROR_MESSAGES.course_form.description_required;
     isValid = false;
   } else if (formData.description.trim().length < 20) {
-    newErrors.description = error_messages.course_form.description_min_length;
+    newErrors.description =
+      VALIDATION_ERROR_MESSAGES.course_form.description_min_length;
     isValid = false;
   } else if (formData.description.trim().length > MAX_DESCRIPTION_LENGTH) {
     newErrors.description = `A descrição deve ter no máximo ${MAX_DESCRIPTION_LENGTH} caracteres.`;
@@ -30,39 +33,49 @@ export const validateCourseForm = (formData) => {
     parseInt(formData.durationValue) <= 0
   ) {
     newErrors.durationValue =
-      error_messages.course_form.duration_positive_number;
+      VALIDATION_ERROR_MESSAGES.course_form.duration_positive_number;
     isValid = false;
   }
 
   if (!formData.durationUnit) {
-    newErrors.durationUnit = error_messages.course_form.unity_requerid;
+    newErrors.durationUnit =
+      VALIDATION_ERROR_MESSAGES.course_form.unit_required;
     isValid = false;
   }
 
   if (!formData.level) {
-    newErrors.level = error_messages.course_form.level_required; 
+    newErrors.level = VALIDATION_ERROR_MESSAGES.course_form.level_required;
     isValid = false;
   }
 
-  if (!formData.imageUrl || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.imageUrl)) {
-    newErrors.imageUrl = error_messages.course_form.image_url_invalid;
-    isValid = false;
-  }
-  if (!formData.companyLogoUrl || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.companyLogoUrl)) {
-    newErrors.companyLogoUrl = error_messages.course_form.company_logo;
+  const urlRegex = /^https?:\/\/.+\.(jpg|jpeg|png|gif|svg|webp)$/i;
+
+  if (!formData.imageUrl || !urlRegex.test(formData.imageUrl)) {
+    newErrors.imageUrl =
+      VALIDATION_ERROR_MESSAGES.course_form.image_url_invalid;
     isValid = false;
   }
 
-  if (!formData.courseUrl || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(formData.courseUrl)) {
-    newErrors.courseUrl = error_messages.course_form.course_url_invalid;
+  if (!formData.companyLogoUrl || !urlRegex.test(formData.companyLogoUrl)) {
+    newErrors.companyLogoUrl =
+      VALIDATION_ERROR_MESSAGES.course_form.company_logo_url_invalid;
     isValid = false;
   }
 
-  if (!formData.category || formData.category.length === 0) {
-    newErrors.category = error_messages.course_form.category_required;
+  const genericUrlRegex = /^https?:\/\/[^\s$.?#].[^\s]*$/i;
+  if (!formData.courseUrl || !genericUrlRegex.test(formData.courseUrl)) {
+    newErrors.courseUrl =
+      VALIDATION_ERROR_MESSAGES.course_form.course_url_invalid;
     isValid = false;
-  } else if (formData.category.length > 2) {
-    newErrors.category = error_messages.course_form.maximum_category;
+  }
+
+  if (!formData.categories || formData.categories.length === 0) {
+    newErrors.categories =
+      VALIDATION_ERROR_MESSAGES.course_form.category_required;
+    isValid = false;
+  } else if (formData.categories.length > 2) {
+    newErrors.categories =
+      VALIDATION_ERROR_MESSAGES.course_form.category_max_two;
     isValid = false;
   }
 

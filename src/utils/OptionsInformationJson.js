@@ -1,9 +1,5 @@
-export const options = {
+export const OPTIONS_INFORMATION_JSON = {
   level: [
-    {
-      id: "all_levels",
-      label: "Todos os níveis",
-    },
     {
       id: "beginner",
       label: "Básico",
@@ -43,11 +39,7 @@ export const options = {
       label: "Anos",
     },
   ],
-  category: [
-    {
-      id: "all_categories",
-      label: "Todas as categorias",
-    },
+  categories: [
     {
       id: "science",
       label: "Ciência",
@@ -77,13 +69,13 @@ export const options = {
       label: "Ciência de Dados",
     },
   ],
-   areaOfInterest: [
+  areaOfInterest: [
     {
       group: "Ciências Exatas e da Terra",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "fisica", label: "Física" },
         { id: "quimica", label: "Química" },
-        { id: "matematica_exatas", label: "Matemática" }, // ID ajustado para evitar conflito com 'mathematics'
+        { id: "matematica_exatas", label: "Matemática" },
         { id: "estatistica", label: "Estatística" },
         { id: "geologia", label: "Geologia" },
         { id: "oceanografia", label: "Oceanografia" },
@@ -93,10 +85,20 @@ export const options = {
     },
     {
       group: "Ciências Biológicas e da Saúde (Pesquisa e Tecnologia)",
-      options: [
-        { id: "biologia", label: "Biologia (Genética, Microbiologia, Bioquímica, Biotecnologia)" },
-        { id: "farmacia_pesquisa", label: "Farmácia (Pesquisa e Desenvolvimento)" },
-        { id: "medicina_pesquisa", label: "Medicina (Pesquisa Clínica, Bioinformática)" },
+      OPTIONS_INFORMATION_JSON: [
+        {
+          id: "biologia",
+          label:
+            "Biologia (Genética, Microbiologia, Bioquímica, Biotecnologia)",
+        },
+        {
+          id: "farmacia_pesquisa",
+          label: "Farmácia (Pesquisa e Desenvolvimento)",
+        },
+        {
+          id: "medicina_pesquisa",
+          label: "Medicina (Pesquisa Clínica, Bioinformática)",
+        },
         { id: "biomedicina", label: "Biomedicina" },
         { id: "enfermagem_tec", label: "Enfermagem (Tecnologia em Saúde)" },
         { id: "nutricao_alimentos", label: "Nutrição (Ciência dos Alimentos)" },
@@ -104,7 +106,7 @@ export const options = {
     },
     {
       group: "Engenharias (Diversas Disciplinas)",
-      options: [
+      OPTIONS_INFORMATION_JSON: [
         { id: "eng_civil", label: "Engenharia Civil" },
         { id: "eng_mecanica", label: "Engenharia Mecânica" },
         { id: "eng_eletrica", label: "Engenharia Elétrica" },
@@ -120,25 +122,50 @@ export const options = {
     },
     {
       group: "Tecnologia da Informação",
-      options: [
-        { id: "eng_software", label: "Engenharia de Software (Front-end, Back-end, Full Stack, Mobile)" },
-        { id: "ciencia_dados_ia", label: "Ciência de Dados e Inteligência Artificial (Análise de Dados, Machine Learning, Deep Learning)" },
+      OPTIONS_INFORMATION_JSON: [
+        {
+          id: "eng_software",
+          label:
+            "Engenharia de Software (Front-end, Back-end, Full Stack, Mobile)",
+        },
+        {
+          id: "ciencia_dados_ia",
+          label:
+            "Ciência de Dados e Inteligência Artificial (Análise de Dados, Machine Learning, Deep Learning)",
+        },
         { id: "ciberseguranca", label: "Cibersegurança" },
         { id: "devops_cloud", label: "DevOps e Cloud Computing" },
         { id: "ux_ui_design", label: "UX/UI Design" },
-        { id: "gerenciamento_projetos_ti", label: "Gerenciamento de Projetos em TI" },
+        {
+          id: "gerenciamento_projetos_ti",
+          label: "Gerenciamento de Projetos em TI",
+        },
         { id: "redes_infra", label: "Redes e Infraestrutura" },
         { id: "qualidade_software", label: "Qualidade de Software (QA)" },
       ],
     },
   ],
   experienceLevel: [
-    { id: "iniciante_estudante", label: "Iniciante / Estudante: Sem experiência ou começando os estudos." },
-    { id: "transicao_carreira", label: "Transição de Carreira: Vindo de outra área e buscando migrar para STEM." },
-    { id: "junior", label: "Júnior: Já atua na área, mas com pouca experiência profissional." },
-    { id: "pleno_intermediario", label: "Pleno / Intermediário: Alguma experiência, buscando aprofundamento." },
+    {
+      id: "iniciante_estudante",
+      label: "Iniciante / Estudante: Sem experiência ou começando os estudos.",
+    },
+    {
+      id: "transicao_carreira",
+      label:
+        "Transição de Carreira: Vindo de outra área e buscando migrar para STEM.",
+    },
+    {
+      id: "junior",
+      label: "Júnior: Já atua na área, mas com pouca experiência profissional.",
+    },
+    {
+      id: "pleno_intermediario",
+      label:
+        "Pleno / Intermediário: Alguma experiência, buscando aprofundamento.",
+    },
   ],
-    timeAvailability: [
+  timeAvailability: [
     {
       day: "Segunda-feira",
       periods: [
@@ -196,20 +223,25 @@ export const options = {
       ],
     },
   ],
-    challengeOptions: [
+  challengeOptions: [
     { id: "sindrome_impostora", label: "Síndrome da Impostora" },
     { id: "falta_autoconfianca", label: "Falta de Autoconfiança" },
     { id: "networking_contatos", label: "Networking e Contatos" },
-    { id: "equilibrio_carreira_vida", label: "Equilíbrio Carreira/Vida Pessoal" },
-    { id: "desenv_habilidades_tec", label: "Desenvolvimento de Habilidades Técnicas" },
+    {
+      id: "equilibrio_carreira_vida",
+      label: "Equilíbrio Carreira/Vida Pessoal",
+    },
+    {
+      id: "desenv_habilidades_tec",
+      label: "Desenvolvimento de Habilidades Técnicas",
+    },
     { id: "progressao_carreira", label: "Progressão na Carreira" },
-    { id: "transicao_carreira_opt", label: "Transição de Carreira" }, // Ajustado ID
+    { id: "transicao_carreira_opt", label: "Transição de Carreira" },
     { id: "busca_emprego", label: "Busca por Emprego" },
-    { id: "outros_desafios", label: "Outros" }, // Ajustado ID
+    { id: "outros_desafios", label: "Outros" },
   ],
 
-   vacancyLocation: [
-    { id: "all_locations", label: "Todas as Localizações" },
+  vacancyLocation: [
     { id: "remoto", label: "Remoto" },
     { id: "belo_horizonte", label: "Belo Horizonte, MG" },
     { id: "sao_paulo", label: "São Paulo, SP" },
@@ -217,14 +249,12 @@ export const options = {
     { id: "hibrido", label: "Híbrido" },
   ],
   vacancyType: [
-    { id: "all_types", label: "Todos os Tipos" },
     { id: "clt", label: "CLT" },
     { id: "pj", label: "PJ" },
     { id: "estagio", label: "Estágio" },
     { id: "freelancer", label: "Freelancer" },
   ],
-  vacancyLevel: [ 
-    { id: "all_levels_vac", label: "Todos os Níveis" },
+  vacancyLevel: [
     { id: "junior_vac", label: "Júnior" },
     { id: "pleno_vac", label: "Pleno" },
     { id: "senior_vac", label: "Sênior" },

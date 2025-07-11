@@ -8,8 +8,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { colors } from "../../constants/Colors";
-import { registration_forms, error_messages } from "../../constants/Messages";
+import { COLORS_APP } from "../../constants/Colors";
+import {
+  REGISTRATION_FORMS_CONTENT,
+  VALIDATION_ERROR_MESSAGES,
+} from "../../constants/Messages";
 
 const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
   const [formData, setFormData] = useState({
@@ -32,18 +35,20 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
     let isValid = true;
 
     if (!formData.email.trim()) {
-      newErrors.email = error_messages.auth.email_required;
+      newErrors.email = VALIDATION_ERROR_MESSAGES.authentication.email_required;
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = error_messages.auth.email_invalid;
+      newErrors.email = VALIDATION_ERROR_MESSAGES.authentication.email_invalid;
       isValid = false;
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = error_messages.auth.password_required;
+      newErrors.password =
+        VALIDATION_ERROR_MESSAGES.authentication.password_required;
       isValid = false;
     } else if (formData.password.trim().length < 6) {
-      newErrors.password = error_messages.auth.password_min_length;
+      newErrors.password =
+        VALIDATION_ERROR_MESSAGES.authentication.password_min_length;
       isValid = false;
     }
 
@@ -65,7 +70,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
         console.error("Erro de login:", err);
         setErrors((prev) => ({
           ...prev,
-          api: error_messages.auth.invalid_credentials,
+          api: VALIDATION_ERROR_MESSAGES.authentication.invalid_credentials,
         }));
       } finally {
         setLoading(false);
@@ -79,7 +84,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
         p: { xs: 3, md: 5 },
         borderRadius: "12px",
         boxShadow: "0px 8px 20px rgba(0,0,0,0.2)",
-        backgroundColor: colors.white,
+        backgroundColor: COLORS_APP.white,
         maxWidth: "400px",
         width: "100%",
         display: "flex",
@@ -91,14 +96,14 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
         variant="h5"
         component="h2"
         align="center"
-        sx={{ fontWeight: "bold", color: colors.text.primary }}
+        sx={{ fontWeight: "bold", color: COLORS_APP.text.primary }}
       >
-        {registration_forms.login.sing_in}
+        {REGISTRATION_FORMS_CONTENT.login.title}
       </Typography>
 
       <TextField
         name="email"
-        label={registration_forms.login.email}
+        label={REGISTRATION_FORMS_CONTENT.login.email_label}
         variant="outlined"
         fullWidth
         value={formData.email}
@@ -109,7 +114,7 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
       />
       <TextField
         name="password"
-        label={registration_forms.login.password}
+        label={REGISTRATION_FORMS_CONTENT.login.password_label}
         variant="outlined"
         fullWidth
         value={formData.password}
@@ -130,24 +135,25 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
         onClick={(e) => handleLogin(e, false)}
         disabled={loading}
         sx={{
-          backgroundColor: colors.brand_colors.stemine_purple,
-          color: colors.white,
+          backgroundColor: COLORS_APP.brand_colors.stemine_purple,
+          color: COLORS_APP.white,
           textTransform: "none",
           padding: "10px 20px",
+          borderRadius: "50px",
           fontWeight: "bold",
           "&:hover": {
-            backgroundColor: colors.brand_colors.stemine_purple_dark,
+            backgroundColor: COLORS_APP.brand_colors.stemine_purple_dark,
           },
         }}
       >
         {loading ? (
           <CircularProgress size={24} color="inherit" />
         ) : (
-          registration_forms.login.to_enter
+          REGISTRATION_FORMS_CONTENT.login.submit_button
         )}
       </Button>
 
-      {/* Opção de Logar como Administrador */}
+      {/* Opção de Logar como Administrador 
       <Box
         sx={{
           display: "flex",
@@ -156,45 +162,47 @@ const LoginForm = ({ onLoginSubmit, onAdminLoginSubmit }) => {
           gap: 1,
         }}
       >
-        <Typography variant="body2" sx={{ color: colors.text.secondary }}>
-          {registration_forms.login.is_adm.title}
+        <Typography variant="body2" sx={{ color: COLORS_APP.text.secondary }}>
+          {REGISTRATION_FORMS_CONTENT.login.admin_login.title}
         </Typography>
         <Button
           variant="outlined"
           onClick={(e) => handleLogin(e, true)}
           disabled={loading}
           sx={{
-            borderColor: colors.brand_colors.stemine_purple,
-            color: colors.brand_colors.stemine_purple,
+            borderColor: COLORS_APP.brand_colors.stemine_purple,
+            color: COLORS_APP.brand_colors.stemine_purple,
             textTransform: "none",
             padding: "8px 16px",
             fontWeight: "bold",
             "&:hover": {
-              backgroundColor: colors.brand_colors.stemine_purple_light,
+              backgroundColor: COLORS_APP.brand_colors.stemine_purple_light,
             },
           }}
         >
+        
           {loading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
-            registration_forms.login.is_adm.acess_adm
+            REGISTRATION_FORMS_CONTENT.login.admin_login.button
           )}
         </Button>
-      </Box>
+      </Box>´
+      */}
 
-      {/* Opção de Cadastrar-se */}
+      
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        {registration_forms.login.call_to_action}{" "}
+        {REGISTRATION_FORMS_CONTENT.login.call_to_action_text}{" "}
         <MuiLink
           component={RouterLink}
           to="/register"
           sx={{
-            color: colors.brand_colors.stemine_pink,
+            color: COLORS_APP.brand_colors.stemine_pink,
             textDecoration: "none",
             fontWeight: "bold",
           }}
         >
-          {registration_forms.login.link_call_to_action}
+          {REGISTRATION_FORMS_CONTENT.login.call_to_action_link}
         </MuiLink>
       </Typography>
     </Box>
