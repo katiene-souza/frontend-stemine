@@ -15,6 +15,8 @@ import {
   Stepper,
   Step,
   StepLabel,
+  CircularProgress, // Para feedback de carregamento
+  Alert, // Para exibir mensagens da API
 } from "@mui/material";
 
 import { Link } from "react-router-dom";
@@ -24,8 +26,11 @@ import { REGISTRATION_FORMS_CONTENT } from "../../constants/Messages";
 import { OPTIONS_INFORMATION_JSON } from "../../utils/OptionsInformationJson";
 
 import { validate_registration_form } from "../../utils/registrationValidation";
+import { useAuth } from "../../contexts/AuthContext"; // <--- Importe useAuth
 
-const RegistrationForm = ({ onSubmit, initialData = {} }) => {
+// Remova a prop 'onSubmit', pois a função 'register' do AuthContext será usada diretamente
+const RegistrationForm = ({ initialData = {} }) => {
+  // <--- LINHA ALTERADA: Removida 'onSubmit'
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: initialData.name || "",
@@ -33,7 +38,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
     password: initialData.password || "",
     confirm_password: initialData.confirm_password || "",
     date_of_birth: initialData.date_of_birth || "",
-    profile_photo: initialData.profile_photo || null,
+    profile_photo: initialData.profile_photo || null, // Objeto File
 
     area_of_interest: initialData.area_of_interest || "",
     experience_level: initialData.experience_level || "",
@@ -54,15 +59,19 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
     adaptation_needed: initialData.adaptation_needed || "",
 
     linkedin: initialData.linkedin || "",
-    portfolio: initialData.portfolio || "",
+    portfolio: initialData.portfolio || "", // Corrigido para 'portfolio'
     github: initialData.github || "",
     lattes: initialData.lattes || "",
-    curriculum_file: initialData.curriculum_file || null,
+    curriculum_file: initialData.curriculum_file || null, // Objeto File
 
     current_challenges: initialData.current_challenges || [],
   });
 
   const [errors, setErrors] = useState({});
+  const [apiMessage, setApiMessage] = useState({ text: "", type: "" }); // Para mensagens da API
+  const [loading, setLoading] = useState(false); // Para estado de carregamento
+
+  const { register } = useAuth(); // <--- Obtenha a função 'register' do contexto
 
   const steps = [
     "Dados de Acesso",
@@ -101,6 +110,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
 
     let isValidStep = true;
 
+    // Apenas valida os campos do passo atual para navegação
     switch (step) {
       case 0: // Dados de Acesso
         if (
@@ -109,7 +119,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           fullValidation.errors.password ||
           fullValidation.errors.confirm_password ||
           fullValidation.errors.date_of_birth ||
-          fullValidation.errors.profile_photo
+          fullValidation.errors.profile_photo // Opcional: validar foto de perfil
         ) {
           isValidStep = false;
         }
@@ -131,7 +141,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
         }
         break;
       case 3: // Links Opcionais
-        isValidStep = true;
+        // Validação de URLs pode ser adicionada aqui se forem obrigatórias
         break;
       case 4: // Acessibilidade
         if (
@@ -142,9 +152,6 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
         ) {
           isValidStep = false;
         }
-        break;
-      case 5: // Interesse em Cursos
-        isValidStep = true;
         break;
       default:
         isValidStep = true;
@@ -158,8 +165,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     } else {
-      handleSubmit();
-      console.log("formulario completo: ", formData);
+      handleSubmit(); // Chama o envio final ao chegar ao último passo
     }
   };
 
@@ -167,15 +173,16 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
+  // Adapte handleSubmit para chamar 'register' do AuthContext
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault(); // Previne o comportamento padrão do formulário se chamado por evento
     const { errors: newErrors, isValid } = validate_registration_form(formData);
     setErrors(newErrors);
+    setApiMessage({ text: "", type: "" }); // Limpa mensagens anteriores
 
-    if (isValid) {
-      onSubmit(formData);
-    } else {
+    if (!isValid) {
       console.error("Erros de validação no envio final:", newErrors);
+      // Volta para o primeiro passo com erro
       const firstErrorField = Object.keys(newErrors)[0];
       if (firstErrorField) {
         if (
@@ -217,8 +224,60 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           )
         )
           setActiveStep(4);
-        // Não há validação para o último passo por padrão
       }
+      return; // Interrompe se houver erros de validação
+    }
+
+    // Se a validação frontend passou, tenta registrar no backend
+    setLoading(true);
+    try {
+      // Adapte os dados para o formato esperado pelo seu SignupRequest.java no backend
+      const dataToSend = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        dateOfBirth: formData.date_of_birth, // Mapeia 'date_of_birth' do front para 'dateOfBirth' do back
+        adaptationNeeded: formData.adaptation_needed,
+        areaOfInterest: formData.area_of_interest,
+        biography: formData.biography,
+        hasDisability: formData.has_disability,
+        disabilityType: formData.disability_type,
+        experienceLevel: formData.experience_level,
+        githubUrl: formData.github, // Mapeia 'github' para 'githubUrl'
+        lattesUrl: formData.lattes, // Mapeia 'lattes' para 'lattesUrl'
+        linkedinUrl: formData.linkedin, // Mapeia 'linkedin' para 'linkedinUrl'
+        portfolioUrl: formData.portfolio, // Mapeia 'portfolio' para 'portfolioUrl'
+        purposeOfMentoring: formData.purpose_of_mentoring,
+        // Campos de arrays: Se o backend espera um array de strings, envie como está.
+        // Se espera JSON string, use JSON.stringify()
+        currentChallenges: formData.current_challenges,
+        timeAvailability: formData.time_availability,
+        // --- ATENÇÃO PARA ARQUIVOS ---
+        // profile_photo e curriculum_file são objetos File no frontend.
+        // O backend espera URLs (String) em SignupRequest, ou precisaria de MultipartFile.
+        // Por simplicidade, enviamos null para as URLs por enquanto.
+        // O upload real de arquivos deve ser feito separadamente para gerar essas URLs.
+        profilePhotoUrl: null, // formData.profile_photo ? 'URL_DO_UPLOAD_AQUI' : null,
+        curriculumFileUrl: null, // formData.curriculum_file ? 'URL_DO_UPLOAD_AQUI' : null,
+      };
+
+      await register(dataToSend); // <--- Chama a função 'register' do AuthContext
+      setApiMessage({
+        text: "Cadastro realizado com sucesso! Você será redirecionado para o login.",
+        type: "success",
+      });
+      // O redirecionamento para /login é tratado dentro do AuthContext
+    } catch (err) {
+      console.error(
+        "Erro no cadastro:",
+        err.response ? err.response.data : err.message
+      );
+      const errorMessage =
+        err.response?.data?.message ||
+        REGISTRATION_FORMS_CONTENT.register.api_error;
+      setApiMessage({ text: errorMessage, type: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -313,14 +372,14 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              name="profile_photo" // <-- ATUALIZADO: Nome da prop para o File Object
+              name="profile_photo"
               label={REGISTRATION_FORMS_CONTENT.register.profile_photo_label}
-              type="file" // <-- ATUALIZADO: Tipo de input para arquivo
+              type="file"
               variant="outlined"
               fullWidth
               InputLabelProps={{ shrink: true }}
               onChange={handleChange}
-              error={!!errors.profile_photo} // <-- ATUALIZADO: Erro para profile_photo
+              error={!!errors.profile_photo}
               helperText={errors.profile_photo}
               sx={{ mb: 3 }}
             />
@@ -444,7 +503,7 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
               SelectProps={{
                 multiple: true,
                 renderValue: (selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  <Box sx={{ display: "flex", flexWrap: 0.5 }}>
                     {selected.map((valueId) => {
                       const day =
                         OPTIONS_INFORMATION_JSON.timeAvailability.find((dg) =>
@@ -464,6 +523,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
                             color: COLORS_APP.brand_colors.stemine_purple,
                             borderRadius: "4px",
                             padding: "2px 8px",
+                            fontWeight: "bold",
+                            fontSize: "0.8rem",
                             whiteSpace: "nowrap",
                           }}
                         >
@@ -586,7 +647,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             <TextField
               name="linkedin"
               label={
-                REGISTRATION_FORMS_CONTENT.register.optional_links.linkedin_label
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .linkedin_label
               }
               placeholder={
                 REGISTRATION_FORMS_CONTENT.register.optional_links
@@ -603,7 +665,8 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             <TextField
               name="portfolio"
               label={
-                REGISTRATION_FORMS_CONTENT.register.optional_links.portfolio_label
+                REGISTRATION_FORMS_CONTENT.register.optional_links
+                  .portfolio_label
               }
               placeholder={
                 REGISTRATION_FORMS_CONTENT.register.optional_links
@@ -619,7 +682,9 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="github"
-              label={REGISTRATION_FORMS_CONTENT.register.optional_links.github_label}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links.github_label
+              }
               placeholder={
                 REGISTRATION_FORMS_CONTENT.register.optional_links
                   .github_placeholder
@@ -634,7 +699,9 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             />
             <TextField
               name="lattes"
-              label={REGISTRATION_FORMS_CONTENT.register.optional_links.lattes_label}
+              label={
+                REGISTRATION_FORMS_CONTENT.register.optional_links.lattes_label
+              }
               placeholder={
                 REGISTRATION_FORMS_CONTENT.register.optional_links
                   .lattes_placeholder
@@ -791,7 +858,6 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
           </Step>
         ))}
       </Stepper>
-
       {/* Conteúdo do Passo Atual */}
       <Box
         sx={{
@@ -804,7 +870,12 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
       >
         {getStepContent(activeStep)}
       </Box>
-
+      {/* Mensagem da API */}
+      {apiMessage.text && (
+        <Alert severity={apiMessage.type} sx={{ mb: 3 }}>
+          {apiMessage.text}
+        </Alert>
+      )}
       {/* Botões de Navegação do Stepper */}
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Button
@@ -831,15 +902,18 @@ const RegistrationForm = ({ onSubmit, initialData = {} }) => {
             },
           }}
         >
-          {activeStep === steps.length - 1
-            ? REGISTRATION_FORMS_CONTENT.register.register_button
-            : REGISTRATION_FORMS_CONTENT.register.next_step_button}
+          {loading ? ( // Exibir CircularProgress se estiver carregando
+            <CircularProgress size={24} color="inherit" />
+          ) : activeStep === steps.length - 1 ? (
+            REGISTRATION_FORMS_CONTENT.register.register_button
+          ) : (
+            REGISTRATION_FORMS_CONTENT.register.next_step_button
+          )}
         </Button>
       </Box>
-
       {/* Link para Login */}
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        {REGISTRATION_FORMS_CONTENT.register.has_account_text}{" "}
+        {REGISTRATION_FORMS_CONTENT.register.has_account_text}
         <Link
           to="/login"
           style={{

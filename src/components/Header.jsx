@@ -47,6 +47,8 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  console.log(user)
+
   const handleLogout = () => {
     logout();
     handleMenuClose();

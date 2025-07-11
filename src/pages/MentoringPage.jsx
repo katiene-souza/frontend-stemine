@@ -68,7 +68,8 @@ const mockMentors = [
 
 const MentoringPage = () => {
   const { user, isAuthenticated } = useAuth();
-  const isAdminUser = isAuthenticated && user?.role === "admin";
+
+  const isAdminUser = isAuthenticated && user?.roles.includes("ROLE_ADMIN");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -98,31 +99,31 @@ const MentoringPage = () => {
     showSnackbar(`Visualizando perfil completo de ${mentorName}`, "info");
   };
 
-  const handleEditMentor = (mentorId) => {
-    if (!isAdminUser) {
-      showSnackbar(
-        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
-        "error"
-      );
-      return;
-    }
-    showSnackbar(`Editando mentora ${mentorId}`, "info");
-  };
+  // const handleEditMentor = (mentorId) => {
+  //   if (!isAdminUser) {
+  //     showSnackbar(
+  //       VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+  //       "error"
+  //     );
+  //     return;
+  //   }
+  //   showSnackbar(`Editando mentora ${mentorId}`, "info");
+  // };
 
-  const handleDeleteMentor = (mentorId, mentorName) => {
-    if (!isAdminUser) {
-      showSnackbar(
-        VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
-        "error"
-      );
-      return;
-    }
-    if (
-      window.confirm(`Tem certeza que deseja excluir a mentora ${mentorName}?`)
-    ) {
-      showSnackbar(`Mentora ${mentorName} excluída! (Simulação)`, "success");
-    }
-  };
+  // const handleDeleteMentor = (mentorId, mentorName) => {
+  //   if (!isAdminUser) {
+  //     showSnackbar(
+  //       VALIDATION_ERROR_MESSAGES.authentication.permission_denied,
+  //       "error"
+  //     );
+  //     return;
+  //   }
+  //   if (
+  //     window.confirm(`Tem certeza que deseja excluir a mentora ${mentorName}?`)
+  //   ) {
+  //     showSnackbar(`Mentora ${mentorName} excluída! (Simulação)`, "success");
+  //   }
+  // };
 
   return (
     <Container

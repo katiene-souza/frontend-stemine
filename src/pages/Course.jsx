@@ -85,7 +85,8 @@ const CoursesPage = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const isAdminUser = isAuthenticated && user?.role === "admin";
+  const isAdminUser = isAuthenticated && user?.roles.includes("ROLE_ADMIN") ;
+ 
 
   const [courses, setCourses] = useState(initialExampleCourses);
   const [searchTerm, setSearchTerm] = useState("");

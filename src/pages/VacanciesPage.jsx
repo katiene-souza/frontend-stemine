@@ -83,7 +83,7 @@ const VacanciesPage = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const isAdminUser = isAuthenticated && user?.role === "admin";
+  const isAdminUser = isAuthenticated && user?.roles.includes("ROLE_ADMIN");
 
   const [vacancies, setVacancies] = useState(initialMockVacancies);
   const [searchTerm, setSearchTerm] = useState("");

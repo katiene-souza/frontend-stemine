@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { COLORS_APP } from "../../constants/Colors";
 import CategoryTag from "./CategoryTag";
 import { COURSE_PAGE_CONTENT } from "../../constants/Messages";
+import { Link } from "react-router-dom";
 
 const CourseCard = ({
   imageUrl,
@@ -13,6 +14,7 @@ const CourseCard = ({
   description,
   duration,
   company_logo_url,
+  courseUrl,
   onSubscribeClick,
   isAdm = false,
   onEditClick,
@@ -245,6 +247,8 @@ const CourseCard = ({
           )}
 
           <Button
+            component={Link}
+            to={courseUrl}
             variant="contained"
             onClick={onSubscribeClick}
             disabled={isAdm === true}
