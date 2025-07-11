@@ -18,7 +18,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
-import VacancyService from "../services/VacancyService";
+import VacancyService from "../services/vacancyService";
 
 import VacancyCard from "../components/ui/VacancyCard";
 import VacancyFormModal from "../components/ui/VacancyFormModal";
