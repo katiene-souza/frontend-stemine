@@ -35,7 +35,7 @@ const Footer = () => {
             gutterBottom
             sx={{ color: COLORS_APP.white, fontWeight: "bold" }}
           >
-            <img src="src/assets/logo-stemine.png" width="160px" />
+            <img src="/assets/logo-stemine.png" width="160px" />
           </Typography>
           <Typography
             variant="body2"
