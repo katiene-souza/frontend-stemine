@@ -2,7 +2,16 @@
 
 Este repositório contém o código-fonte do frontend do projeto STEMINE, desenvolvido com **React** e **Material-UI**.
 
+<img width="944" height="535" alt="image" src="https://github.com/user-attachments/assets/e4a1f1a9-fddf-4922-8da6-e170bb40bcdc" />
+
 ### Tecnologias Utilizadas
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Material-UI](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![React Router DOM](https://img.shields.io/badge/React_Router_DOM-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![CKEditor 5](https://img.shields.io/badge/CKEditor_5-333333?style=for-the-badge&logo=ckeditor5&logoColor=white)
 
 * **React:** Biblioteca JavaScript para construção de interfaces de usuário.
 * **Material-UI:** Biblioteca de componentes React para um design de interface elegante e responsivo.
