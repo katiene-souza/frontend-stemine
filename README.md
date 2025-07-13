@@ -20,6 +20,12 @@ Este repositório contém o código-fonte do frontend do projeto STEMINE, desenv
 * **React Router DOM:** Para gerenciamento de rotas e navegação.
 * **CKEditor 5 for React:** Editor de texto rico para criação de conteúdo em artigos.
 
+### Objetivos de Desenvolvimento Sustentável (ODS)
+
+![ODS 4 - Educação de Qualidade](https://img.shields.io/badge/ODS_4-E5243B?style=for-the-badge&logo=un&logoColor=white)
+![ODS 5 - Igualdade de Gênero](https://img.shields.io/badge/ODS_5-FF3A21?style=for-the-badge&logo=un&logoColor=white)
+![ODS 10 - Redução das Desigualdades](https://img.shields.io/badge/ODS_10-DD1367?style=for-the-badge&logo=un&logoColor=white)
+
 ### Estrutura do Projeto
 
 A estrutura principal do projeto segue as convenções comuns de aplicativos React:
