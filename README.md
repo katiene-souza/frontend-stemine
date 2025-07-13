@@ -2,6 +2,9 @@
 
 Este repositório contém o código-fonte do frontend do projeto STEMINE, desenvolvido com **React** e **Material-UI**.
 
+### Link do deploy:
+[Frontend Stemine](https://frontend-stemine-production.up.railway.app/)
+
 <img width="944" height="535" alt="image" src="https://github.com/user-attachments/assets/e4a1f1a9-fddf-4922-8da6-e170bb40bcdc" />
 
 ### Tecnologias Utilizadas
