@@ -25,6 +25,9 @@ Este repositório contém o código-fonte do frontend do projeto STEMINE, desenv
 ![ODS 4 - Educação de Qualidade](https://img.shields.io/badge/ODS_4-E5243B?style=for-the-badge&logo=un&logoColor=white)
 ![ODS 5 - Igualdade de Gênero](https://img.shields.io/badge/ODS_5-FF3A21?style=for-the-badge&logo=un&logoColor=white)
 ![ODS 10 - Redução das Desigualdades](https://img.shields.io/badge/ODS_10-DD1367?style=for-the-badge&logo=un&logoColor=white)
+- ODS 4 - Educação de Qualidade
+- ODS 5 - Igualdade de Gênero
+- ODS 10 - Redução das Desigualdades
 
 ### Estrutura do Projeto
 
